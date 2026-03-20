@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>⚔️ 1914 — Büyük Savaş</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#3d7aaa;font-family:'Courier New',monospace;color:#1a0f00;height:100vh;overflow:hidden;display:flex;flex-direction:column;user-select:none;}
+
+#splash{position:fixed;inset:0;background:#080500;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:16px;}
+#splash h1{font-size:21px;color:#f0c040;letter-spacing:4px;}
+.spin{width:44px;height:44px;border:3px solid #1a1200;border-top:3px solid #ffd700;border-radius:50%;animation:sp 0.8s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+#smsg{font-size:11px;color:#8a6a20;letter-spacing:1px;}
+#serr{font-size:10px;color:#ff6060;max-width:320px;text-align:center;line-height:1.7;display:none;}
+#snote{font-size:9px;color:#4a3808;max-width:300px;text-align:center;line-height:1.6;display:none;}
+
+#picker{position:fixed;inset:0;background:rgba(6,3,0,0.97);display:none;flex-direction:column;align-items:center;z-index:8000;overflow-y:auto;padding:20px 14px;}
+#picker h2{font-size:18px;color:#f0c040;letter-spacing:4px;margin-bottom:3px;}
+.psub{font-size:10px;color:#7a5a18;letter-spacing:2px;margin-bottom:12px;}
+#picker input{background:#0f0800;border:1px solid #5a4000;color:#e8d5a0;padding:6px 12px;border-radius:4px;font-family:inherit;font-size:11px;width:280px;outline:none;margin-bottom:10px;}
+#picker input:focus{border-color:#ffd700;}
+#cGrid{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;max-width:920px;}
+.pc{background:#110800;border:2px solid #2a1500;border-radius:6px;padding:7px 10px;cursor:pointer;transition:all 0.12s;width:170px;}
+.pc:hover{transform:translateY(-2px);background:#1c1000;}
+.pf{font-size:16px;}.pn{font-size:11px;font-weight:bold;color:#f0c040;margin-top:1px;}
+.ps{font-size:8px;color:#6a4a18;margin-top:3px;line-height:1.5;}
+
+#hdr{background:linear-gradient(90deg,#180800,#281200,#180800);border-bottom:2px solid #8b6914;padding:6px 12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;flex-shrink:0;}
+#hdr h1{font-size:13px;color:#f0c040;letter-spacing:2px;}
+.sts{display:flex;gap:5px;flex-wrap:wrap;font-size:10px;}
+.st{padding:3px 7px;border-radius:3px;border:1px solid;}
+.st-t{background:#142214;border-color:#285028;color:#88ff88;}
+.st-g{background:#221a08;border-color:#584808;color:#ffd700;}
+.st-p{background:#081422;border-color:#083858;color:#5aafff;}
+.st-r{background:#140822;border-color:#380858;color:#cc88ff;}
+.st-ph{background:#220808;border-color:#580808;color:#ff8888;}
+.st-ph.on{background:#082208;border-color:#085808;color:#88ff88;}
+.hbtn{padding:3px 9px;border-radius:3px;border:1px solid #5a4000;background:#160e00;color:#ffd700;cursor:pointer;font-family:inherit;font-size:9px;}
+.hbtn:hover{background:#241800;border-color:#ffd700;}
+
+#main{display:flex;flex:1;overflow:hidden;}
+#mapwrap{flex:1;position:relative;overflow:hidden;background:#3d7aaa;}
+#mapsvg{position:absolute;top:0;left:0;width:100%;height:100%;}
+
+.land{stroke:#111;stroke-width:0.5;cursor:pointer;transition:filter 0.1s;}
+.land:hover{filter:brightness(1.2);}
+.land.MINE{stroke:#fff!important;stroke-width:2!important;}
+.land.ATK{stroke:#ff6600!important;stroke-width:2!important;filter:brightness(1.25) drop-shadow(0 0 4px #ff6600)!important;}
+.land.MOV{stroke:#00dd88!important;stroke-width:1.8!important;filter:brightness(1.15)!important;}
+.land.SEL{stroke:#ffd700!important;stroke-width:2.5!important;filter:brightness(1.4) drop-shadow(0 0 6px #ffd700)!important;}
+.graticule{fill:none;stroke:#2a6090;stroke-width:0.4;opacity:0.5;}
+.sphere{fill:#3d7aaa;}
+
+#zc{position:absolute;bottom:12px;left:12px;z-index:30;display:flex;flex-direction:column;gap:3px;}
+.zb{width:30px;height:30px;background:rgba(18,10,0,0.88);border:1px solid #8b6914;color:#ffd700;font-size:17px;cursor:pointer;border-radius:4px;display:flex;align-items:center;justify-content:center;}
+.zb:hover{background:rgba(36,22,0,0.9);}
+#zlbl{position:absolute;bottom:12px;left:46px;z-index:30;background:rgba(5,3,0,0.82);border:1px solid #3a2800;color:#7a5a18;font-size:9px;padding:2px 7px;border-radius:3px;pointer-events:none;}
+
+#tt{position:absolute;background:rgba(2,2,0,0.97);border:1px solid #8b6914;border-radius:5px;padding:7px 11px;font-size:10px;color:#e8d5a0;pointer-events:none;display:none;z-index:200;line-height:1.9;box-shadow:0 3px 16px rgba(0,0,0,0.85);max-width:260px;}
+
+#sb{width:232px;background:linear-gradient(180deg,#0e0700,#170c00);border-left:2px solid #3a2800;display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;}
+.sbs{padding:8px 10px;border-bottom:1px solid #3a2800;font-size:10px;}
+.sbt{font-size:8px;color:#8a6a20;letter-spacing:2px;margin-bottom:5px;}
+.abtn{width:100%;padding:5px 7px;border-radius:3px;border:1px solid #3a6a00;font-family:inherit;font-size:9px;cursor:pointer;margin-top:4px;background:#111e00;color:#90ff70;text-align:left;line-height:1.6;}
+.abtn:disabled{background:#0a0a0a;border-color:#222;color:#333;cursor:not-allowed;}
+.abtn b{display:block;color:#c0ff90;}
+.abtn span{font-size:8px;color:#4a7a20;}
+#cp{background:#180800;border:1px solid #4a3000;border-radius:4px;padding:7px;margin-top:5px;font-size:9px;display:none;}
+#cp .cpt{color:#ffd700;font-weight:bold;margin-bottom:3px;}
+.cpr{display:flex;justify-content:space-between;color:#c8a860;margin-bottom:2px;}
+.cpbw{height:5px;background:#1a1500;border-radius:3px;margin:3px 0;}
+.cpb{height:100%;border-radius:3px;}
+#endbtn{width:100%;padding:7px;border-radius:4px;border:2px solid #ffd700;font-family:inherit;font-size:10px;letter-spacing:2px;font-weight:bold;cursor:pointer;background:linear-gradient(135deg,#3a1e00,#6b4000);color:#ffd700;}
+#endbtn:disabled{background:#0a0a0a;border-color:#222;color:#333;cursor:not-allowed;}
+#logbox{flex:1;overflow-y:auto;}
+.le{font-size:9px;padding:2px 0;border-bottom:1px solid #281800;line-height:1.4;}
+.le.n{color:#e8d080;}.le.o{color:#5a3808;}
+#howto{padding:6px 10px;border-top:1px solid #3a2800;font-size:8px;color:#4a3010;line-height:1.8;}
+
+/* Move picker */
+#movepicker{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:600;align-items:center;justify-content:center;}
+#movebox{background:#0e0a00;border:2px solid #8b6914;border-radius:8px;padding:20px 24px;width:310px;text-align:center;}
+#movebox h4{color:#f0c040;font-size:12px;letter-spacing:2px;margin-bottom:10px;}
+#movebox .minfo{font-size:10px;color:#c8a860;margin-bottom:12px;line-height:1.7;}
+#movebox input[type=range]{width:100%;accent-color:#ffd700;margin-bottom:5px;}
+.mval{font-size:20px;font-weight:bold;color:#ffd700;margin-bottom:8px;}
+.mbtns{display:flex;gap:10px;justify-content:center;margin-top:12px;}
+.mbtn{padding:7px 18px;border-radius:4px;border:1px solid;font-family:inherit;font-size:11px;cursor:pointer;letter-spacing:1px;}
+.mbtn-ok{background:linear-gradient(135deg,#2a1500,#5a3000);border-color:#cc6600;color:#ffaa44;}
+.mbtn-cancel{background:#100800;border-color:#3a2000;color:#888;}
+
+/* Tech */
+#techmod{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:500;align-items:center;justify-content:center;}
+#techmod.show{display:flex;}
+#techbox{background:#0e0700;border:2px solid #5a4000;border-radius:8px;padding:16px;width:490px;max-height:80vh;overflow-y:auto;}
+#techbox h3{color:#f0c040;font-size:13px;letter-spacing:3px;margin-bottom:10px;}
+.ti{background:#170d00;border:1px solid #3a2200;border-radius:4px;padding:8px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.ti-n{font-size:10px;color:#e8d5a0;font-weight:bold;}
+.ti-d{font-size:9px;color:#6a4a18;margin-top:2px;}
+.ti-e{font-size:9px;color:#4a8800;margin-top:1px;font-style:italic;}
+.tbtn{padding:4px 9px;border-radius:3px;border:1px solid #8b6914;background:#1c0d00;color:#ffd700;cursor:pointer;font-family:inherit;font-size:9px;white-space:nowrap;}
+.tbtn:disabled{border-color:#222;background:#080808;color:#2a2a2a;cursor:not-allowed;}
+.cbtn{float:right;background:none;border:1px solid #4a0000;color:#ff5555;padding:3px 8px;border-radius:3px;cursor:pointer;font-family:inherit;font-size:10px;}
+
+#go{display:none;position:absolute;inset:0;background:rgba(0,0,0,0.93);flex-direction:column;align-items:center;justify-content:center;z-index:300;}
+#go.show{display:flex;}
+.gem{font-size:60px;margin-bottom:8px;}.gti{font-size:24px;font-weight:bold;letter-spacing:4px;}
+.gsu{font-size:11px;color:#aaa;margin-top:8px;text-align:center;max-width:360px;line-height:1.7;}
+#grb{margin-top:16px;padding:9px 24px;background:linear-gradient(135deg,#3a1e00,#6b4000);border:2px solid #ffd700;border-radius:5px;color:#ffd700;font-size:13px;cursor:pointer;letter-spacing:2px;font-family:inherit;}
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <h1>⚔️ 1914 — BÜYÜK SAVAŞ</h1>
+  <div style="font-size:10px;color:#7a5a18;letter-spacing:2px;">BİRİNCİ DÜNYA SAVAŞI STRATEJİSİ</div>
+  <div class="spin"></div>
+  <div id="smsg">Harita yükleniyor...</div>
+  <div id="snote"></div>
+  <div id="serr"></div>
+</div>
+
+<div id="picker">
+  <h2>⚔️ 1914 — BÜYÜK SAVAŞ</h2>
+  <div class="psub">HANGİ DEVLETİ YÖNETECEKSİN?</div>
+  <input id="srch" placeholder="🔍 Devlet ara..." oninput="filterCards()">
+  <div id="cGrid"></div>
+</div>
+
+<div id="hdr">
+  <div>
+    <h1>⚔️ 1914 BÜYÜK SAVAŞ <span id="pflag"></span></h1>
+    <div style="font-size:8px;color:#a08030;letter-spacing:2px" id="plbl">1914 · Birinci Dünya Savaşı</div>
+  </div>
+  <div class="sts">
+    <div class="st st-t">📅 <b id="s-tur">1</b></div>
+    <div class="st st-g">💰 <b id="s-gld">0</b></div>
+    <div class="st st-p">🏭 <b id="s-prd">0</b>/tur</div>
+    <div class="st st-r">🔬 <b id="s-res">0</b></div>
+    <div class="st st-ph on" id="s-ph">🟢 SENİN TURUN</div>
+  </div>
+  <div style="display:flex;gap:5px;flex-wrap:wrap;">
+    <button class="hbtn" onclick="openTech()">🔬 TEKNOLOJİ</button>
+    <button class="hbtn" onclick="showPicker()">🌍 DEVLETİ DEĞİŞTİR</button>
+  </div>
+</div>
+
+<div id="main">
+  <div id="mapwrap">
+    <svg id="mapsvg"></svg>
+    <div id="tt"></div>
+    <div id="zc">
+      <button class="zb" onclick="doZoom(1.3)">+</button>
+      <button class="zb" onclick="doZoom(0.77)">−</button>
+      <button class="zb" onclick="resetZoom()" style="font-size:11px">⌂</button>
+    </div>
+    <div id="zlbl">Tekerlek: zoom · Sürükle: kaydır</div>
+    <div id="go">
+      <div class="gem" id="gem"></div>
+      <div class="gti" id="gti"></div>
+      <div class="gsu" id="gsu"></div>
+      <button id="grb" onclick="showPicker()">🔄 YENİDEN BAŞLA</button>
+    </div>
+  </div>
+
+  <div id="sb">
+    <div class="sbs">
+      <div class="sbt">DEVLET SAYISI</div>
+      <div id="statbox" style="font-size:9px;color:#c8a860;line-height:1.8;"></div>
+    </div>
+    <div class="sbs" style="min-height:195px;">
+      <div class="sbt">SEÇİLİ DEVLET</div>
+      <div id="sc" style="color:#333;font-style:italic;font-size:9px;">Devletini seç...</div>
+      <div id="ap"></div>
+      <div id="cp"></div>
+    </div>
+    <div class="sbs"><button id="endbtn" onclick="endTurn()">⏭ TURU BİTİR</button></div>
+    <div class="sbs" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+      <div class="sbt">SAVAŞ GÜNLÜĞÜ</div>
+      <div id="logbox"></div>
+    </div>
+    <div id="howto">
+      📖 <b style="color:#6a4818">NASIL OYNANIR</b><br>
+      • Devletini seç (beyaz kenarlık)<br>
+      • Komşuya tıkla → ⚔️ SAVAŞ AÇILIR<br>
+      • Her saldırı bir savaş ilanıdır!<br>
+      🏭 Fabrika: +3 asker/tur kalıcı<br>
+      🌾 Çiftlik: +5💰/tur kalıcı<br>
+      ⏭ Turu bitir → gelir + üretim
+    </div>
+  </div>
+</div>
+
+<!-- Move / Attack picker -->
+<div id="movepicker">
+  <div id="movebox">
+    <h4 id="mp-title">⚔️ SAVAŞ İLANI</h4>
+    <div class="minfo" id="mp-info"></div>
+    <div class="mval" id="mp-val">0</div>
+    <input type="range" id="mp-slider" min="1" max="100" value="10">
+    <div style="font-size:8px;color:#5a4010;margin-top:3px;" id="mp-note"></div>
+    <div class="mbtns">
+      <button class="mbtn mbtn-ok" id="mp-ok" onclick="confirmAction()">✓ ONAYLA</button>
+      <button class="mbtn mbtn-cancel" onclick="cancelAction()">✕ İPTAL</button>
+    </div>
+  </div>
+</div>
+
+<div id="techmod">
+  <div id="techbox">
+    <button class="cbtn" onclick="document.getElementById('techmod').classList.remove('show')">✕ KAPAT</button>
+    <h3>🔬 TEKNOLOJİ AĞACI</h3>
+    <div id="tcc"></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+// ═══════════════════════════════════════════
+//  1914 TERRITORY DATA — WWI era
+//  No alliances — every country is independent
+//  Colors matching the uploaded 1914 map
+// ═══════════════════════════════════════════
+const T = {
+  // MAJOR POWERS
+  russia:      {n:"Rus İmparatorluğu",      f:"🇷🇺", c:"#d4a017", tr:180, g:160, p:9, r:5, fac:6, frm:5, mor:80,
+                conn:["germany","austria","ottoman","persia","afghan","mongolia","china","japan_k","norway","sweden","finland_r","romania","serbia"]},
+  uk:          {n:"Britanya İmparatorluğu", f:"🇬🇧", c:"#cc8899", tr:150, g:180, p:8, r:8, fac:6, frm:3, mor:88,
+                conn:["france","germany","belgium","netherlands","ireland_uk","egypt_uk","india_uk","australia_uk","canada_uk","s_africa_uk","nigeria_uk","east_africa_uk"]},
+  france:      {n:"Fransız İmparatorluğu",  f:"🇫🇷", c:"#8899cc", tr:130, g:150, p:7, r:7, fac:5, frm:3, mor:82,
+                conn:["uk","germany","belgium","spain","italy","switzerland","algeria_fr","morocco_fr","west_africa_fr","madagascar_fr","indochina_fr"]},
+  germany:     {n:"Alman İmparatorluğu",    f:"🇩🇪", c:"#778899", tr:160, g:170, p:11, r:10, fac:8, frm:3, mor:92,
+                conn:["russia","france","austria","belgium","netherlands","denmark","sweden","switzerland","poland_r","east_africa_g","southwest_africa_g","cameroon_g","togo_g"]},
+  austria:     {n:"Avusturya-Macaristan",   f:"🇦🇹", c:"#cc6644", tr:130, g:130, p:7, r:6, fac:5, frm:3, mor:75,
+                conn:["russia","germany","italy","serbia","romania","ottoman","switzerland","poland_r"]},
+  ottoman:     {n:"Osmanlı İmparatorluğu",  f:"🇹🇷", c:"#88cc77", tr:110, g:110, p:5, r:4, fac:3, frm:4, mor:72,
+                conn:["russia","austria","serbia","bulgaria","greece","egypt_uk","persia","arabia","mesopotamia"]},
+  usa:         {n:"Amerika Birleşik Devletleri", f:"🇺🇸", c:"#5577aa", tr:80, g:200, p:8, r:9, fac:6, frm:5, mor:85,
+                conn:["canada_uk","mexico","cuba_us","panama_us"]},
+  italy:       {n:"İtalya Krallığı",        f:"🇮🇹", c:"#66aa55", tr:80, g:100, p:5, r:5, fac:3, frm:3, mor:70,
+                conn:["france","austria","switzerland","ottoman","libya_it","eritrea_it","somalia_it"]},
+  japan:       {n:"Japon İmparatorluğu",    f:"🇯🇵", c:"#cc5555", tr:100, g:130, p:7, r:7, fac:5, frm:2, mor:88,
+                conn:["russia","china","korea_j","formosa_j","manchuria_j"]},
+
+  // EUROPE SMALL/MEDIUM
+  belgium:     {n:"Belçika Krallığı",       f:"🇧🇪", c:"#eebb22", tr:30, g:60, p:4, r:4, fac:3, frm:2, mor:72,
+                conn:["france","germany","netherlands","uk"]},
+  netherlands: {n:"Hollanda Krallığı",      f:"🇳🇱", c:"#ee8844", tr:28, g:65, p:3, r:4, fac:2, frm:2, mor:75,
+                conn:["germany","belgium","uk"]},
+  denmark:     {n:"Danimarka Krallığı",     f:"🇩🇰", c:"#cc4455", tr:22, g:48, p:2, r:3, fac:1, frm:2, mor:78,
+                conn:["germany","sweden","norway"]},
+  sweden:      {n:"İsveç Krallığı",         f:"🇸🇪", c:"#4477aa", tr:35, g:65, p:3, r:4, fac:2, frm:2, mor:82,
+                conn:["norway","denmark","russia","finland_r","germany"]},
+  norway:      {n:"Norveç Krallığı",        f:"🇳🇴", c:"#dd7755", tr:25, g:52, p:2, r:3, fac:1, frm:2, mor:80,
+                conn:["sweden","denmark","russia","uk"]},
+  switzerland: {n:"İsviçre Konfederasyonu", f:"🇨🇭", c:"#ee3333", tr:18, g:70, p:3, r:5, fac:2, frm:2, mor:90,
+                conn:["france","germany","austria","italy"]},
+  spain:       {n:"İspanya Krallığı",       f:"🇪🇸", c:"#dd9944", tr:40, g:58, p:3, r:3, fac:2, frm:3, mor:68,
+                conn:["france","portugal","morocco_fr","spanish_morocco"]},
+  portugal:    {n:"Portekiz Cumhuriyeti",   f:"🇵🇹", c:"#44aa66", tr:22, g:42, p:2, r:2, fac:1, frm:2, mor:70,
+                conn:["spain","angola_pt","mozambique_pt","guinea_pt","brazil"]},
+  serbia:      {n:"Sırbistan Krallığı",     f:"🇷🇸", c:"#5566bb", tr:35, g:38, p:2, r:2, fac:1, frm:2, mor:82,
+                conn:["austria","russia","ottoman","bulgaria","romania","greece","montenegro"]},
+  romania:     {n:"Romanya Krallığı",       f:"🇷🇴", c:"#7777cc", tr:38, g:45, p:2, r:2, fac:1, frm:2, mor:70,
+                conn:["russia","austria","bulgaria","ottoman","serbia"]},
+  bulgaria:    {n:"Bulgaristan Çarlığı",    f:"🇧🇬", c:"#55aa88", tr:32, g:40, p:2, r:2, fac:1, frm:2, mor:72,
+                conn:["ottoman","romania","serbia","greece","russia"]},
+  greece:      {n:"Yunanistan Krallığı",    f:"🇬🇷", c:"#4488bb", tr:32, g:42, p:2, r:3, fac:1, frm:2, mor:72,
+                conn:["bulgaria","ottoman","serbia","italy"]},
+  montenegro:  {n:"Karadağ Krallığı",       f:"🇲🇪", c:"#778855", tr:12, g:22, p:1, r:1, fac:0, frm:1, mor:78,
+                conn:["serbia","austria","albania_it"]},
+
+  // ASIA
+  china:       {n:"Çin Cumhuriyeti",        f:"🇨🇳", c:"#dd5533", tr:120, g:80, p:5, r:3, fac:2, frm:7, mor:60,
+                conn:["russia","japan","mongolia","tibet","siam","indochina_fr","manchuria_j","korea_j"]},
+  persia:      {n:"Kaçar İranı",            f:"🇮🇷", c:"#55aa55", tr:38, g:55, p:2, r:2, fac:1, frm:3, mor:65,
+                conn:["russia","ottoman","afghan","india_uk","mesopotamia","arabia"]},
+  afghan:      {n:"Afganistan Emirliği",    f:"🇦🇫", c:"#998844", tr:28, g:30, p:1, r:1, fac:0, frm:2, mor:70,
+                conn:["russia","persia","india_uk","china"]},
+  siam:        {n:"Siyam Krallığı",         f:"🇹🇭", c:"#aa5566", tr:30, g:40, p:2, r:1, fac:1, frm:3, mor:68,
+                conn:["china","indochina_fr","malaya_uk","india_uk"]},
+  mongolia:    {n:"Moğolistan",             f:"🇲🇳", c:"#cc6633", tr:18, g:25, p:1, r:1, fac:0, frm:1, mor:70,
+                conn:["russia","china"]},
+  tibet:       {n:"Tibet",                  f:"🏔️", c:"#aabb88", tr:15, g:20, p:1, r:1, fac:0, frm:1, mor:65,
+                conn:["china","india_uk","nepal_uk"]},
+
+  // MIDDLE EAST
+  arabia:      {n:"Arabistan (Osmanlı)",    f:"☪️",  c:"#ddcc66", tr:25, g:45, p:2, r:1, fac:0, frm:2, mor:62,
+                conn:["ottoman","persia","egypt_uk","mesopotamia","eritrea_it"]},
+  mesopotamia: {n:"Mezopotamya (Osmanlı)",  f:"☪️",  c:"#ccbb55", tr:22, g:40, p:2, r:1, fac:1, frm:2, mor:60,
+                conn:["ottoman","persia","arabia","egypt_uk"]},
+
+  // BRITISH COLONIES (independent entities)
+  india_uk:    {n:"Britanya Hindistanı",    f:"🇮🇳", c:"#ee9944", tr:90, g:90, p:5, r:3, fac:3, frm:5, mor:65,
+                conn:["persia","afghan","siam","malaya_uk","nepal_uk","china","uk","ceylon_uk"]},
+  canada_uk:   {n:"Kanada Dominyon",        f:"🇨🇦", c:"#cc8888", tr:55, g:90, p:4, r:4, fac:2, frm:3, mor:82,
+                conn:["usa","uk"]},
+  australia_uk:{n:"Avustralya Dominyon",    f:"🇦🇺", c:"#55bb88", tr:40, g:80, p:3, r:3, fac:1, frm:3, mor:82,
+                conn:["uk","new_zealand_uk","german_ng","netherlands_ei"]},
+  new_zealand_uk:{n:"Yeni Zelanda Dominyon",f:"🇳🇿", c:"#44aadd", tr:18, g:50, p:2, r:2, fac:0, frm:2, mor:82,
+                conn:["australia_uk","uk"]},
+  s_africa_uk: {n:"G.Afrika Birliği",       f:"🇿🇦", c:"#77bb66", tr:35, g:75, p:3, r:2, fac:1, frm:2, mor:75,
+                conn:["uk","mozambique_pt","angola_pt","german_sw","rhodesia_uk"]},
+  egypt_uk:    {n:"Mısır (İngiliz)",        f:"🇪🇬", c:"#ccaa55", tr:45, g:65, p:3, r:2, fac:1, frm:3, mor:65,
+                conn:["uk","ottoman","arabia","mesopotamia","sudan_uk","libya_it"]},
+  malaya_uk:   {n:"Malaya (İngiliz)",       f:"🇲🇾", c:"#cc4455", tr:20, g:42, p:2, r:1, fac:1, frm:2, mor:62,
+                conn:["siam","netherlands_ei","india_uk","uk"]},
+  nigeria_uk:  {n:"Nijerya (İngiliz)",      f:"🌍",  c:"#44aa88", tr:18, g:32, p:1, r:0, fac:0, frm:2, mor:60,
+                conn:["uk","cameroon_g","french_wa","togo_g"]},
+  east_africa_uk:{n:"Doğu Afrika (İngiliz)",f:"🌍",  c:"#55bb88", tr:18, g:30, p:1, r:0, fac:0, frm:2, mor:60,
+                conn:["uk","german_ea","belgian_congo","ethiopia","mozambique_pt","sudan_uk"]},
+  sudan_uk:    {n:"Sudan (İngiliz)",        f:"🇸🇩", c:"#88aa44", tr:20, g:28, p:1, r:0, fac:0, frm:2, mor:60,
+                conn:["egypt_uk","ethiopia","east_africa_uk","french_wa","uk"]},
+  rhodesia_uk: {n:"Rodezya (İngiliz)",      f:"🌍",  c:"#66bb55", tr:15, g:28, p:1, r:0, fac:0, frm:2, mor:65,
+                conn:["s_africa_uk","german_ea","mozambique_pt","belgian_congo","angola_pt","uk"]},
+  ceylon_uk:   {n:"Seylan (İngiliz)",       f:"🇱🇰", c:"#dd6644", tr:12, g:22, p:1, r:0, fac:0, frm:2, mor:62,
+                conn:["india_uk","uk"]},
+  nepal_uk:    {n:"Nepal",                  f:"🇳🇵", c:"#cc4488", tr:20, g:20, p:1, r:1, fac:0, frm:2, mor:70,
+                conn:["india_uk","china","tibet"]},
+  ireland_uk:  {n:"İrlanda (İngiliz)",      f:"🇮🇪", c:"#77cc88", tr:12, g:35, p:1, r:2, fac:0, frm:1, mor:68,
+                conn:["uk"]},
+
+  // FRENCH COLONIES
+  algeria_fr:  {n:"Cezayir (Fransız)",      f:"🇩🇿", c:"#7799bb", tr:28, g:38, p:2, r:1, fac:1, frm:2, mor:60,
+                conn:["france","morocco_fr","spanish_morocco","libya_it","french_wa","tunisia_fr","uk"]},
+  morocco_fr:  {n:"Fas (Fransız)",          f:"🇲🇦", c:"#aa7744", tr:22, g:32, p:1, r:0, fac:0, frm:2, mor:58,
+                conn:["spain","spanish_morocco","algeria_fr","france","uk"]},
+  spanish_morocco:{n:"İspanyol Fas",        f:"🇪🇸", c:"#dd8833", tr:12, g:20, p:1, r:0, fac:0, frm:1, mor:60,
+                conn:["spain","morocco_fr","algeria_fr"]},
+  west_africa_fr:{n:"Fransız Batı Afrikası",f:"🌍",  c:"#6688aa", tr:20, g:30, p:1, r:0, fac:0, frm:2, mor:58,
+                conn:["france","morocco_fr","algeria_fr","nigeria_uk","cameroon_g","belgian_congo","togo_g","liberia"]},
+  french_wa:   {n:"Fransız Ekvator Afrikası",f:"🌍", c:"#5577aa", tr:15, g:25, p:1, r:0, fac:0, frm:2, mor:58,
+                conn:["france","west_africa_fr","cameroon_g","belgian_congo","sudan_uk","east_africa_uk"]},
+  indochina_fr:{n:"Fransız Çinhindistanı",  f:"🌍",  c:"#8866aa", tr:22, g:35, p:2, r:1, fac:1, frm:2, mor:60,
+                conn:["france","china","siam","malaya_uk"]},
+  madagascar_fr:{n:"Madagaskar (Fransız)",  f:"🇲🇬", c:"#ee7744", tr:12, g:22, p:1, r:0, fac:0, frm:2, mor:58,
+                conn:["france","mozambique_pt","s_africa_uk"]},
+  tunisia_fr:  {n:"Tunus (Fransız)",        f:"🇹🇳", c:"#ee4444", tr:18, g:28, p:1, r:0, fac:0, frm:2, mor:58,
+                conn:["france","algeria_fr","libya_it","italy","uk"]},
+
+  // GERMAN COLONIES
+  german_ea:   {n:"Almanya Doğu Afrikası",  f:"🌍",  c:"#aaaaaa", tr:18, g:28, p:1, r:0, fac:0, frm:2, mor:60,
+                conn:["germany","east_africa_uk","rhodesia_uk","mozambique_pt","belgian_congo"]},
+  german_sw:   {n:"Almanya G.Batı Afrikası",f:"🌍",  c:"#999999", tr:15, g:22, p:1, r:0, fac:0, frm:1, mor:60,
+                conn:["germany","s_africa_uk","angola_pt"]},
+  cameroon_g:  {n:"Kamerun (Alman)",        f:"🌍",  c:"#888888", tr:15, g:22, p:1, r:0, fac:0, frm:1, mor:58,
+                conn:["germany","nigeria_uk","west_africa_fr","french_wa","belgian_congo","togo_g"]},
+  togo_g:      {n:"Togo (Alman)",           f:"🌍",  c:"#777777", tr:10, g:18, p:1, r:0, fac:0, frm:1, mor:58,
+                conn:["germany","nigeria_uk","west_africa_fr"]},
+  german_ng:   {n:"Alman Yeni Ginesi",      f:"🌍",  c:"#666666", tr:12, g:20, p:1, r:0, fac:0, frm:1, mor:58,
+                conn:["germany","australia_uk","netherlands_ei"]},
+
+  // ITALIAN COLONIES
+  libya_it:    {n:"Libya (İtalyan)",        f:"🇱🇾", c:"#88bb55", tr:22, g:30, p:1, r:0, fac:0, frm:1, mor:60,
+                conn:["italy","egypt_uk","algeria_fr","tunisia_fr","ottoman"]},
+  eritrea_it:  {n:"Eritre (İtalyan)",       f:"🌍",  c:"#77aa44", tr:15, g:22, p:1, r:0, fac:0, frm:1, mor:60,
+                conn:["italy","ethiopia","sudan_uk","arabia"]},
+  somalia_it:  {n:"Somali (İtalyan)",       f:"🌍",  c:"#66aa33", tr:12, g:20, p:1, r:0, fac:0, frm:1, mor:58,
+                conn:["italy","ethiopia","east_africa_uk"]},
+  albania_it:  {n:"Arnavutluk",             f:"🇦🇱", c:"#cc3333", tr:15, g:22, p:1, r:1, fac:0, frm:1, mor:65,
+                conn:["austria","serbia","greece","montenegro","italy","ottoman"]},
+
+  // PORTUGUESE COLONIES
+  angola_pt:   {n:"Angola (Portekiz)",      f:"🇦🇴", c:"#cc3322", tr:15, g:24, p:1, r:0, fac:0, frm:2, mor:60,
+                conn:["portugal","s_africa_uk","german_sw","rhodesia_uk","belgian_congo","french_wa"]},
+  mozambique_pt:{n:"Mozambik (Portekiz)",   f:"🇲🇿", c:"#55aa88", tr:15, g:24, p:1, r:0, fac:0, frm:2, mor:60,
+                conn:["portugal","s_africa_uk","rhodesia_uk","german_ea","madagascar_fr","east_africa_uk"]},
+  guinea_pt:   {n:"Portekiz Ginesi",        f:"🌍",  c:"#44aa55", tr:10, g:18, p:1, r:0, fac:0, frm:1, mor:58,
+                conn:["portugal","west_africa_fr"]},
+
+  // DUTCH COLONIES
+  netherlands_ei:{n:"Hollanda Doğu Hindistanı",f:"🇮🇩",c:"#ee8822",tr:30,g:48,p:2,r:1,fac:1,frm:3,mor:60,
+                conn:["netherlands","australia_uk","malaya_uk","german_ng","siam"]},
+
+  // BELGIAN COLONIES
+  belgian_congo:{n:"Belçika Kongosu",       f:"🌍",  c:"#dd9911", tr:18, g:28, p:1, r:0, fac:0, frm:2, mor:58,
+                conn:["belgium","german_ea","east_africa_uk","rhodesia_uk","angola_pt","french_wa","french_waa","cameroon_g"]},
+
+  // JAPANESE COLONIES
+  korea_j:     {n:"Kore (Japon)",           f:"🇰🇷", c:"#cc6666", tr:22, g:35, p:2, r:1, fac:1, frm:2, mor:55,
+                conn:["japan","russia","china","manchuria_j"]},
+  formosa_j:   {n:"Formoza (Japon)",        f:"🀄",  c:"#bb5555", tr:18, g:28, p:1, r:1, fac:0, frm:1, mor:58,
+                conn:["japan","china"]},
+  manchuria_j: {n:"Mançurya (Japon)",       f:"🀄",  c:"#aa4444", tr:30, g:38, p:2, r:1, fac:1, frm:2, mor:60,
+                conn:["japan","russia","china","mongolia","korea_j"]},
+
+  // RUSSIAN TERRITORIES (part of empire but somewhat distinct)
+  finland_r:   {n:"Finlandiya (Rus)",       f:"🇫🇮", c:"#4477aa", tr:22, g:42, p:2, r:3, fac:1, frm:2, mor:70,
+                conn:["russia","sweden","norway"]},
+  poland_r:    {n:"Polanya (Rus)",          f:"🇵🇱", c:"#dd8888", tr:38, g:45, p:3, r:2, fac:2, frm:3, mor:62,
+                conn:["russia","germany","austria"]},
+  japan_k:     {n:"Kamçatka (Rus)",         f:"🌊",  c:"#ddbb77", tr:10, g:15, p:1, r:0, fac:0, frm:0, mor:70,
+                conn:["russia","japan"]},
+
+  // AMERICAS
+  brazil:      {n:"Brezilya Cumhuriyeti",   f:"🇧🇷", c:"#66bb55", tr:55, g:70, p:4, r:2, fac:2, frm:5, mor:68,
+                conn:["colombia","venezuela","peru","bolivia","paraguay","argentina","portugal","suriname","french_guiana","uk"]},
+  argentina:   {n:"Arjantin Cumhuriyeti",   f:"🇦🇷", c:"#88aadd", tr:40, g:65, p:3, r:2, fac:1, frm:4, mor:70,
+                conn:["brazil","chile","bolivia","paraguay","uruguay"]},
+  chile:       {n:"Şili Cumhuriyeti",       f:"🇨🇱", c:"#cc3344", tr:28, g:45, p:2, r:2, fac:1, frm:2, mor:70,
+                conn:["argentina","peru","bolivia"]},
+  peru:        {n:"Peru Cumhuriyeti",       f:"🇵🇪", c:"#dd4422", tr:25, g:38, p:2, r:1, fac:0, frm:3, mor:65,
+                conn:["brazil","bolivia","chile","colombia","ecuador"]},
+  colombia:    {n:"Kolombiya Cumhuriyeti",  f:"🇨🇴", c:"#eebb22", tr:22, g:35, p:2, r:1, fac:0, frm:3, mor:65,
+                conn:["brazil","peru","venezuela","ecuador","panama_us"]},
+  mexico:      {n:"Meksika Cumhuriyeti",    f:"🇲🇽", c:"#44aa55", tr:38, g:50, p:3, r:2, fac:1, frm:3, mor:62,
+                conn:["usa","guatemala","belize_uk"]},
+  cuba_us:     {n:"Küba (ABD Etkisi)",      f:"🇨🇺", c:"#4488bb", tr:18, g:30, p:1, r:1, fac:0, frm:2, mor:62,
+                conn:["usa","mexico"]},
+  panama_us:   {n:"Panama (ABD)",           f:"🇵🇦", c:"#5599cc", tr:12, g:25, p:1, r:1, fac:0, frm:1, mor:60,
+                conn:["usa","colombia","mexico","guatemala"]},
+  venezuela:   {n:"Venezuela",             f:"🇻🇪", c:"#cc9933", tr:18, g:32, p:1, r:1, fac:0, frm:2, mor:62,
+                conn:["brazil","colombia","suriname","uk"]},
+  bolivia:     {n:"Bolivya",               f:"🇧🇴", c:"#dd6633", tr:20, g:28, p:1, r:1, fac:0, frm:2, mor:62,
+                conn:["brazil","argentina","chile","peru","paraguay"]},
+  paraguay:    {n:"Paraguay",              f:"🇵🇾", c:"#bb8833", tr:15, g:22, p:1, r:0, fac:0, frm:2, mor:65,
+                conn:["brazil","argentina","bolivia"]},
+  uruguay:     {n:"Uruguay",               f:"🇺🇾", c:"#55aacc", tr:14, g:28, p:1, r:1, fac:0, frm:2, mor:68,
+                conn:["brazil","argentina"]},
+  ecuador:     {n:"Ekvador",               f:"🇪🇨", c:"#eebb44", tr:15, g:25, p:1, r:0, fac:0, frm:2, mor:62,
+                conn:["colombia","peru"]},
+  guatemala:   {n:"Guatemala",             f:"🌎", c:"#44bb66", tr:12, g:20, p:1, r:0, fac:0, frm:1, mor:60,
+                conn:["mexico","panama_us"]},
+  suriname:    {n:"Surinam (Hollanda)",     f:"🇸🇷", c:"#dd9933", tr:10, g:18, p:1, r:0, fac:0, frm:1, mor:58,
+                conn:["netherlands","venezuela","brazil","french_guiana"]},
+  french_guiana:{n:"Fransız Guyanası",     f:"🌍", c:"#8899cc", tr:10, g:18, p:1, r:0, fac:0, frm:1, mor:58,
+                conn:["france","venezuela","brazil","suriname"]},
+  belize_uk:   {n:"Britanya Hondurası",    f:"🌍", c:"#cc8899", tr:8, g:15, p:0, r:0, fac:0, frm:1, mor:60,
+                conn:["uk","mexico","guatemala"]},
+
+  // AFRICA INDEPENDENT
+  ethiopia:    {n:"Etiyopya İmparatorluğu", f:"🇪🇹", c:"#88bb44", tr:45, g:45, p:2, r:1, fac:1, frm:4, mor:80,
+                conn:["eritrea_it","somalia_it","east_africa_uk","sudan_uk","french_wa","djibouti_fr","arabia"]},
+  liberia:     {n:"Liberya Cumhuriyeti",    f:"🇱🇷", c:"#336633", tr:12, g:20, p:1, r:1, fac:0, frm:1, mor:65,
+                conn:["west_africa_fr","nigeria_uk"]},
+  djibouti_fr: {n:"Fransız Somali",         f:"🌍", c:"#7788bb", tr:10, g:18, p:0, r:0, fac:0, frm:1, mor:55,
+                conn:["france","ethiopia","somalia_it","arabia"]},
+  french_waa:  {n:"Fransız Batı Afrika (G)", f:"🌍",c:"#6677aa", tr:12, g:20, p:1, r:0, fac:0, frm:1, mor:55,
+                conn:["france","west_africa_fr","belgian_congo","angola_pt"]},
+};
+
+// ─── ISO to Territory mapping for 1914 borders ─────────
+// Key: ISO numeric code → territory ID
+// Note: 1914 borders differ greatly from modern ones
+// Many modern countries were part of empires
+const ISO = {
+  // Russia
+  "643":"russia","112":"russia","233":"finland_r","428":"russia","440":"russia",
+  "498":"russia","051":"russia","031":"russia","398":"russia","762":"russia",
+  "795":"russia","860":"russia","417":"russia","440":"russia","804":"russia",
+  // UK
+  "826":"uk","833":"uk","832":"uk",
+  // UK colonies mapped
+  "356":"india_uk","050":"india_uk","064":"india_uk","144":"ceylon_uk",
+  "036":"australia_uk","554":"new_zealand_uk","710":"s_africa_uk",
+  "818":"egypt_uk","729":"sudan_uk","800":"east_africa_uk","404":"east_africa_uk",
+  "646":"east_africa_uk","108":"east_africa_uk","706":"east_africa_uk",
+  "458":"malaya_uk","096":"malaya_uk","764":"siam","116":"siam","762":"siam",
+  "566":"nigeria_uk","288":"nigeria_uk","694":"nigeria_uk",
+  "748":"s_africa_uk","426":"s_africa_uk","516":"s_africa_uk","072":"s_africa_uk",
+  "716":"rhodesia_uk","454":"rhodesia_uk","894":"rhodesia_uk",
+  "124":"canada_uk","304":"canada_uk",
+  "372":"ireland_uk","356":"india_uk",
+  // France
+  "250":"france","254":"france","474":"france","638":"france",
+  "012":"algeria_fr","504":"morocco_fr","788":"tunisia_fr",
+  "854":"west_africa_fr","466":"west_africa_fr","686":"west_africa_fr",
+  "324":"west_africa_fr","384":"west_africa_fr","768":"west_africa_fr",
+  "270":"west_africa_fr","624":"west_africa_fr","204":"west_africa_fr",
+  "180":"belgian_congo","140":"french_wa","120":"cameroon_g",
+  "266":"french_wa","678":"french_wa",
+  "450":"madagascar_fr","764":"indochina_fr","116":"indochina_fr",
+  "418":"indochina_fr","626":"indochina_fr",
+  "262":"djibouti_fr","270":"west_africa_fr",
+  "254":"french_guiana","740":"suriname",
+  // Germany
+  "276":"germany",
+  // German colonies - use modern codes for approximate territory
+  "834":"german_ea","646":"german_ea",
+  "516":"german_sw",
+  "120":"cameroon_g","768":"togo_g",
+  "598":"german_ng","090":"german_ng","242":"german_ng",
+  // Austria-Hungary
+  "040":"austria","348":"hungary","703":"austria","191":"austria",
+  "070":"serbia","807":"serbia","499":"montenegro",
+  // Ottoman Empire
+  "792":"ottoman","760":"ottoman","368":"ottoman","275":"ottoman",
+  "422":"ottoman","400":"ottoman","887":"ottoman","512":"ottoman",
+  "682":"arabia","887":"arabia",
+  // Italy
+  "380":"italy","674":"italy","336":"italy",
+  "434":"libya_it","232":"eritrea_it","706":"somalia_it",
+  "008":"albania_it",
+  // Japan
+  "392":"japan","410":"korea_j","158":"formosa_j",
+  // USA
+  "840":"usa","630":"usa","850":"usa","316":"usa","584":"usa","585":"usa",
+  "580":"usa","581":"usa",
+  "484":"mexico","192":"cuba_us","591":"panama_us",
+  // China
+  "156":"china","496":"mongolia",
+  // Other Asia
+  "364":"persia","004":"afghan","462":"ceylon_uk","524":"nepal_uk",
+  "144":"ceylon_uk","360":"netherlands_ei","626":"netherlands_ei",
+  // South America
+  "076":"brazil","032":"argentina","152":"chile","604":"peru",
+  "170":"colombia","862":"venezuela","858":"uruguay","600":"paraguay",
+  "068":"bolivia","218":"ecuador","320":"guatemala","084":"belize_uk",
+  "558":"guatemala","188":"guatemala","222":"guatemala","340":"guatemala",
+  "388":"cuba_us","332":"cuba_us","044":"cuba_us","052":"cuba_us",
+  "328":"venezuela","740":"suriname","254":"french_guiana",
+  // Africa
+  "231":"ethiopia","694":"nigeria_uk","288":"nigeria_uk","270":"west_africa_fr",
+  "324":"west_africa_fr","384":"west_africa_fr",
+  "430":"liberia","024":"angola_pt","508":"mozambique_pt","626":"guinea_pt",
+  "480":"madagascar_fr","175":"madagascar_fr",
+  "566":"nigeria_uk","204":"west_africa_fr","466":"west_africa_fr",
+  "854":"west_africa_fr",
+  // Belgium
+  "056":"belgium","180":"belgian_congo",
+  // Netherlands
+  "528":"netherlands","740":"suriname",
+  // Denmark
+  "208":"denmark","352":"denmark",
+  // Sweden/Norway
+  "752":"sweden","578":"norway","246":"finland_r",
+  // Others
+  "756":"switzerland","724":"spain","620":"portugal","300":"greece",
+  "100":"bulgaria","642":"romania","688":"serbia","499":"montenegro",
+  "008":"albania_it","792":"ottoman",
+  "710":"s_africa_uk",
+};
+
+const TECH_TREE=[
+  {id:"army2",n:"Siper Savaşı",       cost:4, req:null,   desc:"Savunma gücü +25%",        eff:"Siperler düşman saldırılarını durdurur"},
+  {id:"army3",n:"Zırhlı Birlikler",   cost:8, req:"army2",desc:"Saldırı gücü +35%",         eff:"İlk tank birlikleri cepheyi yırtıyor"},
+  {id:"navy2",n:"Deniz Ablukası",     cost:5, req:null,   desc:"+6💰/tur abluka geliri",    eff:"Deniz yollarını kes, düşmanı zayıflat"},
+  {id:"navy3",n:"Savaş Gemisi",       cost:10,req:"navy2",desc:"Deniz saldırı +45%",         eff:"Dreadnought sınıfı zırhlılar"},
+  {id:"air2", n:"Keşif Uçakları",     cost:4, req:null,   desc:"Savaş tahmini daha doğru", eff:"Hava keşfi düşman güçlerini ortaya çıkarır"},
+  {id:"air3", n:"Bombardıman Uçağı",  cost:8, req:"air2", desc:"Saldırı +20% ek",           eff:"Stratejik bombalama desteği"},
+  {id:"ind2", n:"Seferberlik",        cost:4, req:null,   desc:"Fabrika üretimi +2/tur",    eff:"Tüm sanayi kapasitesi savaşa döner"},
+  {id:"ind3", n:"Ağır Sanayi",        cost:8, req:"ind2", desc:"+4/tur üretim bonusu",      eff:"Seri üretim silah ve malzeme sağlar"},
+  {id:"med2", n:"Askeri Tıp",         cost:3, req:null,   desc:"Kayıplar -%12",             eff:"Sahra hastaneleri morali destekler"},
+  {id:"spy2", n:"İstihbarat Servisi", cost:5, req:null,   desc:"Düşman gücünü gör",         eff:"Casusluk ağı kritik bilgi sağlar"},
+];
+
+// ─── STATE ────────────────────────────────────
+let PTID=null, sel=null, selFrom=null, turn=1, phase="player", dead=false;
+// All territories currently owned by player (original + conquered)
+const playerOwned=new Set();
+let logs=[], techs=new Set(), pendingAction=null;
+const INIT={};
+Object.entries(T).forEach(([id,t])=>INIT[id]={tr:t.tr,g:t.g,p:t.p,r:t.r,fac:t.fac,frm:t.frm,mor:t.mor});
+
+function pt(){return T[PTID];}
+function addLog(m){logs.unshift(m);if(logs.length>26)logs.pop();}
+function conn(a,b){const ta=T[a],tb=T[b];return(ta&&ta.conn.includes(b))||(tb&&tb.conn.includes(a));}
+
+// ─── D3 MAP ──────────────────────────────────
+const CACHE_D3='ww1_d3_v7', CACHE_TOPO='ww1_topo_v3', CACHE_WORLD='ww1_1914_geojson_v1';
+let projection,pathGen,curK=1,isDrag=false,wasDrag=false;
+const centroids={};
+
+async function bootstrap(){
+  const msg=document.getElementById('smsg');
+  const err=document.getElementById('serr');
+  const note=document.getElementById('snote');
+
+  async function loadScriptFrom(src){
+    return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+  }
+  async function loadScriptText(text){
+    return new Promise((res,rej)=>{const b=new Blob([text],{type:'application/javascript'});const s=document.createElement('script');s.src=URL.createObjectURL(b);s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+  }
+
+  try{
+    msg.textContent='D3.js yükleniyor...';
+    const d3c=localStorage.getItem(CACHE_D3);
+    if(d3c&&d3c.length>1000){await loadScriptText(d3c);}
+    else{
+      note.style.display='block';note.textContent='İlk açılış: veri indiriliyor, kaydediliyor...';
+      await loadScriptFrom('https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js');
+      try{const t=await fetch('https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js').then(r=>r.text());localStorage.setItem(CACHE_D3,t);}catch(e){}
+    }
+    msg.textContent='TopoJSON yükleniyor...';
+    const tc=localStorage.getItem(CACHE_TOPO);
+    if(tc&&tc.length>1000){await loadScriptText(tc);}
+    else{
+      await loadScriptFrom('https://cdn.jsdelivr.net/npm/topojson@3/dist/topojson.min.js');
+      try{const t=await fetch('https://cdn.jsdelivr.net/npm/topojson@3/dist/topojson.min.js').then(r=>r.text());localStorage.setItem(CACHE_TOPO,t);}catch(e){}
+    }
+    msg.textContent='1914 harita sınırları yükleniyor...';
+    let worldData;
+    const wc=localStorage.getItem(CACHE_WORLD);
+    if(wc&&wc.length>1000){worldData=JSON.parse(wc);}
+    else{
+      const t=await fetch('https://raw.githubusercontent.com/aourednik/historical-basemaps/master/geojson/world_1914.geojson').then(r=>r.text());
+      localStorage.setItem(CACHE_WORLD,t);worldData=JSON.parse(t);
+    }
+    note.style.display='none';
+    msg.textContent='Başlatılıyor...';
+    setTimeout(()=>{document.getElementById('splash').style.display='none';initMap(worldData);},250);
+  }catch(e){
+    err.style.display='block';
+    err.innerHTML='❌ Yükleme hatası.<br>İlk açılışta internet bağlantısı gerekli.<br>Sonraki açılışlarda offline çalışır.<br><br><small>Hata: '+e.message+'</small>';
+    console.error(e);
+  }
+}
+bootstrap();
+
+
+// ─── 1914 GeoJSON NAME → Territory ID mapping ────────────
+// Names from aourednik/historical-basemaps world_1914.geojson
+const NAME_TO_TID = {
+  // Major Empires
+  'Russia':'russia','Russian Empire':'russia',
+  'United Kingdom':'uk','Great Britain':'uk','British Empire':'uk',
+  'France':'france','French Republic':'france',
+  'Germany':'germany','German Empire':'germany',
+  'Austria-Hungary':'austria','Austria':'austria','Hungary':'austria',
+  'Ottoman Empire':'ottoman','Turkey':'ottoman',
+  'United States':'usa','United States of America':'usa',
+  'Italy':'italy','Kingdom of Italy':'italy',
+  'Japan':'japan','Empire of Japan':'japan',
+  'China':'china','Chinese Republic':'china','Qing China':'china','Republic of China':'china','Qing Dynasty':'china','Chinese Empire':'china','China Proper':'china',
+  // Europe
+  'Belgium':'belgium','Netherlands':'netherlands','Denmark':'denmark',
+  'Sweden':'sweden','Norway':'norway','Switzerland':'switzerland',
+  'Spain':'spain','Portugal':'portugal','Serbia':'serbia',
+  'Romania':'romania','Bulgaria':'bulgaria','Greece':'greece',
+  'Montenegro':'montenegro','Albania':'albania_it',
+  'Finland':'finland_r',
+  // Colonies - British
+  'British India':'india_uk','India':'india_uk',
+  'Canada':'canada_uk','Australia':'australia_uk','New Zealand':'new_zealand_uk',
+  'South Africa':'s_africa_uk','Union of South Africa':'s_africa_uk',
+  'Egypt':'egypt_uk','British Egypt':'egypt_uk',
+  'Sudan':'sudan_uk','Anglo-Egyptian Sudan':'sudan_uk',
+  'British East Africa':'east_africa_uk','Kenya':'east_africa_uk',
+  'Uganda':'east_africa_uk','Nyasaland':'east_africa_uk',
+  'British Malaya':'malaya_uk','Malaya':'malaya_uk',
+  'Nigeria':'nigeria_uk','Gold Coast':'nigeria_uk','Sierra Leone':'nigeria_uk',
+  'Rhodesia':'rhodesia_uk','Northern Rhodesia':'rhodesia_uk','Southern Rhodesia':'rhodesia_uk',
+  'Ceylon':'ceylon_uk',
+  'Nepal':'nepal_uk',
+  'Ireland':'ireland_uk',
+  // Colonies - French
+  'Algeria':'algeria_fr','French Algeria':'algeria_fr',
+  'Morocco':'morocco_fr','French Morocco':'morocco_fr',
+  'Tunisia':'tunisia_fr','French Tunisia':'tunisia_fr',
+  'French West Africa':'west_africa_fr',
+  'French Equatorial Africa':'french_wa',
+  'French Indochina':'indochina_fr','Indochina':'indochina_fr',
+  'Madagascar':'madagascar_fr','French Madagascar':'madagascar_fr',
+  'Djibouti':'djibouti_fr','French Somaliland':'djibouti_fr',
+  'French Guiana':'french_guiana',
+  // Colonies - German
+  'German East Africa':'german_ea','German East Africa (Tanganyika)':'german_ea',
+  'German South-West Africa':'german_sw','German Southwest Africa':'german_sw',
+  'Cameroon':'cameroon_g','Kamerun':'cameroon_g',
+  'Togoland':'togo_g','Togo':'togo_g',
+  'German New Guinea':'german_ng','German Papua':'german_ng',
+  // Colonies - Italian
+  'Libya':'libya_it','Italian Libya':'libya_it','Tripolitania':'libya_it','Cyrenaica':'libya_it',
+  'Eritrea':'eritrea_it','Italian Eritrea':'eritrea_it',
+  'Italian Somaliland':'somalia_it',
+  'Albania':'albania_it',
+  // Colonies - Portuguese
+  'Angola':'angola_pt','Portuguese Angola':'angola_pt',
+  'Mozambique':'mozambique_pt','Portuguese Mozambique':'mozambique_pt','Portuguese East Africa':'mozambique_pt',
+  'Portuguese Guinea':'guinea_pt',
+  'Suriname':'suriname','Dutch Guiana':'suriname',
+  // Colonies - Dutch
+  'Dutch East Indies':'netherlands_ei','Netherlands East Indies':'netherlands_ei',
+  // Colonies - Belgian
+  'Belgian Congo':'belgian_congo','Congo Free State':'belgian_congo',
+  // Japanese colonies
+  'Korea':'korea_j','Chosen':'korea_j',
+  'Formosa':'formosa_j','Taiwan':'formosa_j',
+  'Manchuria':'manchuria_j',
+  // Russian territories
+  'Poland':'poland_r','Congress Poland':'poland_r',
+  // Asia
+  'Persia':'persia','Iran':'persia',
+  'Afghanistan':'afghan',
+  'Siam':'siam','Thailand':'siam',
+  'Mongolia':'mongolia','Outer Mongolia':'mongolia',
+  'Tibet':'tibet',
+  'Arabia':'arabia','Hejaz':'arabia','Nejd':'arabia',
+  'Mesopotamia':'mesopotamia',
+  // Americas
+  'Brazil':'brazil','Mexico':'mexico',
+  'Argentina':'argentina','Chile':'chile','Peru':'peru',
+  'Colombia':'colombia','Venezuela':'venezuela',
+  'Bolivia':'bolivia','Paraguay':'paraguay','Uruguay':'uruguay',
+  'Ecuador':'ecuador','Guatemala':'guatemala',
+  'Cuba':'cuba_us','Panama':'panama_us',
+  // Africa - Independent
+  'Ethiopia':'ethiopia','Abyssinia':'ethiopia',
+  'Liberia':'liberia',
+  // Spanish
+  'Spanish Morocco':'spanish_morocco',
+  // Misc
+  'Greenland':'canada_uk',
+  // Additional 1914 names from various GeoJSON sources
+  'Austro-Hungarian Empire':'austria','K.u.K. Monarchy':'austria',
+  'Russian Empire':'russia','Tsar Russia':'russia',
+  'British India':'india_uk','Company India':'india_uk',
+  'German Empire':'germany','Deutsches Reich':'germany',
+  'Ottoman':'ottoman','Ottoman Empire':'ottoman','Sublime Porte':'ottoman',
+  'French Republic':'france','Third Republic':'france',
+  'United Kingdom of Great Britain and Ireland':'uk',
+  'Empire of Japan':'japan','Meiji Japan':'japan',
+  'Qing':'china','Qing Empire':'china',
+  'Persian Empire':'persia','Qajar Persia':'persia','Qajar Iran':'persia',
+  'Kingdom of Serbia':'serbia','Principality of Serbia':'serbia',
+  'Kingdom of Romania':'romania','Kingdom of Bulgaria':'bulgaria',
+  'Kingdom of Greece':'greece','Kingdom of Montenegro':'montenegro',
+  'Kingdom of Italy':'italy','Kingdom of Spain':'spain',
+  'Kingdom of Sweden':'sweden','Kingdom of Norway':'norway',
+  'Kingdom of Denmark':'denmark','Kingdom of Belgium':'belgium',
+  'Kingdom of Netherlands':'netherlands','Kingdom of Portugal':'portugal',
+  'Swiss Confederation':'switzerland','Swiss':'switzerland',
+  'Republic of Brazil':'brazil','Federal Republic of Brazil':'brazil',
+  'Republic of Argentina':'argentina','Argentine Republic':'argentina',
+  'Republic of Chile':'chile','Republic of Peru':'peru',
+  'Republic of Colombia':'colombia','Republic of Venezuela':'venezuela',
+  'Republic of Bolivia':'bolivia','Republic of Uruguay':'uruguay',
+  'Republic of Ecuador':'ecuador','Republic of Paraguay':'paraguay',
+  'Republic of Mexico':'mexico','United Mexican States':'mexico',
+  'Republic of Liberia':'liberia',
+  'Empire of Ethiopia':'ethiopia','Ethiopian Empire':'ethiopia',
+  'Emirate of Afghanistan':'afghan',
+  'Kingdom of Siam':'siam',
+  'Outer Mongolia':'mongolia','Republic of Mongolia':'mongolia',
+  // Colony alternate names
+  'British Somaliland':'east_africa_uk',
+  'German Togoland':'togo_g','German Cameroon':'cameroon_g',
+  'Italian Tripolitania':'libya_it','Italian Cyrenaica':'libya_it',
+  'French Congo':'french_wa','Middle Congo':'french_wa',
+  'Ubangi-Shari':'french_wa','Chad':'french_wa',
+  'Gabon':'french_wa','Dahomey':'west_africa_fr',
+  'Senegal':'west_africa_fr','Guinea':'west_africa_fr',
+  'Ivory Coast':'west_africa_fr','Niger':'west_africa_fr',
+  'Upper Volta':'west_africa_fr','Mali':'west_africa_fr',
+  'Mauritania':'west_africa_fr',
+  'Bechuanaland':'s_africa_uk','Basutoland':'s_africa_uk',
+  'Swaziland':'s_africa_uk',
+  'Dutch Guyana':'suriname',
+  'Annam':'indochina_fr','Tonkin':'indochina_fr','Cochinchina':'indochina_fr',
+  'Cambodia':'indochina_fr','Laos':'indochina_fr',
+  'Burma':'india_uk','British Burma':'india_uk',
+  'Aden':'india_uk','British Aden':'arabia',
+  'Hejaz':'arabia','Asir':'arabia','Yemen':'ottoman',
+  'Kuwait':'ottoman','Bahrain':'india_uk',
+};
+
+// Fuzzy name matching fallback
+// Extra guessing using all property fields
+function guessNameExtra(name, props){
+  if(!props)return null;
+  // Try matching any property value
+  for(const val of Object.values(props)){
+    if(typeof val==='string'&&val.length>1){
+      const r=NAME_TO_TID[val]||NAME_TO_TID[val.toLowerCase()]||null;
+      if(r)return r;
+      // keyword match on any property
+      const vl=val.toLowerCase();
+      if(vl.includes('ottoman')||vl.includes('türk'))return 'ottoman';
+      if(vl.includes('austro')||vl.includes('habsburg'))return 'austria';
+      if(vl.includes('russia'))return 'russia';
+      if(vl.includes('german'))return 'germany';
+      if(vl.includes('british'))return 'uk';
+      if(vl.includes('french'))return 'france';
+      if(vl.includes('japan'))return 'japan';
+      if(vl.includes('china'))return 'china';
+    }
+  }
+  return null;
+}
+
+function guessName(name){
+  if(!name)return null;
+  const nl=name.toLowerCase().trim();
+  // Try exact match first (case insensitive)
+  for(const [k,v] of Object.entries(NAME_TO_TID)){
+    if(nl===k.toLowerCase())return v;
+  }
+  // Try partial match
+  for(const [k,v] of Object.entries(NAME_TO_TID)){
+    if(nl.includes(k.toLowerCase()))return v;
+  }
+  // Keyword matching
+  if(nl.includes('russia')||nl.includes('siberia')||nl.includes('soviet'))return 'russia';
+  if(nl.includes('great britain')||nl.includes('united kingdom'))return 'uk';
+  if(nl.includes('british')&&nl.includes('india'))return 'india_uk';
+  if(nl.includes('british')&&(nl.includes('east africa')||nl.includes('kenya')))return 'east_africa_uk';
+  if(nl.includes('british')&&nl.includes('nigeria'))return 'nigeria_uk';
+  if(nl.includes('british')&&nl.includes('rhodesia'))return 'rhodesia_uk';
+  if(nl.includes('british')&&nl.includes('malaya'))return 'malaya_uk';
+  if(nl.includes('british'))return 'uk';
+  if(nl.includes('french')&&nl.includes('west africa'))return 'west_africa_fr';
+  if(nl.includes('french')&&nl.includes('equatorial'))return 'french_wa';
+  if(nl.includes('french')&&nl.includes('indochina'))return 'indochina_fr';
+  if(nl.includes('french')&&nl.includes('somali'))return 'djibouti_fr';
+  if(nl.includes('french'))return 'france';
+  if(nl.includes('german')&&nl.includes('east africa'))return 'german_ea';
+  if(nl.includes('german')&&(nl.includes('south-west')||nl.includes('southwest')))return 'german_sw';
+  if(nl.includes('german')&&nl.includes('cameroon'))return 'cameroon_g';
+  if(nl.includes('german')&&nl.includes('togo'))return 'togo_g';
+  if(nl.includes('german')&&nl.includes('guinea'))return 'german_ng';
+  if(nl.includes('german')||nl.includes('deutschland'))return 'germany';
+  if(nl.includes('ottoman')||nl.includes('turkey')||nl.includes('turkish'))return 'ottoman';
+  if(nl.includes('austria')||nl.includes('hungarian'))return 'austria';
+  if(nl.includes('japan'))return 'japan';
+  if(nl.includes('china')||nl.includes('chinese')||nl.includes('qing'))return 'china';
+  if(nl.includes('india'))return 'india_uk';
+  if(nl.includes('dutch')||nl.includes('netherlands'))return 'netherlands';
+  if(nl.includes('portug'))return 'portugal';
+  if(nl.includes('spain')||nl.includes('spanish'))return 'spain';
+  if(nl.includes('italy')||nl.includes('italian'))return 'italy';
+  if(nl.includes('belgi'))return 'belgium';
+  if(nl.includes('ethiopia')||nl.includes('abyssin'))return 'ethiopia';
+  if(nl.includes('persia')||nl.includes('iran')||nl.includes('qajar'))return 'persia';
+  if(nl.includes('siam')||nl.includes('thai'))return 'siam';
+  if(nl.includes('mongol'))return 'mongolia';
+  if(nl.includes('tibet'))return 'tibet';
+  if(nl.includes('afghan'))return 'afghan';
+  if(nl.includes('arabia')||nl.includes('hejaz'))return 'arabia';
+  if(nl.includes('mesopotamia')||nl.includes('iraq'))return 'mesopotamia';
+  if(nl.includes('egypt'))return 'egypt_uk';
+  if(nl.includes('sudan'))return 'sudan_uk';
+  if(nl.includes('morocco'))return 'morocco_fr';
+  if(nl.includes('algeria'))return 'algeria_fr';
+  if(nl.includes('libya')||nl.includes('tripoli'))return 'libya_it';
+  if(nl.includes('canada'))return 'canada_uk';
+  if(nl.includes('australia'))return 'australia_uk';
+  if(nl.includes('zealand'))return 'new_zealand_uk';
+  if(nl.includes('south africa'))return 's_africa_uk';
+  if(nl.includes('brazil'))return 'brazil';
+  if(nl.includes('argentin'))return 'argentina';
+  if(nl.includes('chile'))return 'chile';
+  if(nl.includes('peru'))return 'peru';
+  if(nl.includes('colombia'))return 'colombia';
+  if(nl.includes('venezuela'))return 'venezuela';
+  if(nl.includes('mexico'))return 'mexico';
+  if(nl.includes('liberia'))return 'liberia';
+  if(nl.includes('finland'))return 'finland_r';
+  if(nl.includes('poland'))return 'poland_r';
+  if(nl.includes('korea'))return 'korea_j';
+  if(nl.includes('formosa')||nl.includes('taiwan'))return 'formosa_j';
+  if(nl.includes('manchuria')||nl.includes('manchukuo'))return 'manchuria_j';
+  return null;
+}
+
+function initMap(world){
+  const mw=document.getElementById('mapwrap');
+  const W=mw.offsetWidth,H=mw.offsetHeight;
+  const svg=d3.select('#mapsvg').attr('width',W).attr('height',H);
+  const gMap=svg.append('g'),gMkr=svg.append('g');
+
+  projection=d3.geoNaturalEarth1().scale(W/6.3).translate([W/2,H/2]);
+  pathGen=d3.geoPath().projection(projection);
+
+  gMap.append('path').datum({type:'Sphere'}).attr('class','sphere').attr('d',pathGen);
+  gMap.append('path').datum(d3.geoGraticule()()).attr('class','graticule').attr('d',pathGen);
+
+  // 1914 GeoJSON: features have properties.NAME (country name in 1914)
+  const features = world.type === 'FeatureCollection' ? world.features :
+                   world.objects ? topojson.feature(world, Object.values(world.objects)[0]).features :
+                   [];
+  const unmapped=[];
+  let autoIdx=0;
+  // Pre-pass: create dynamic territories for unmapped GeoJSON features
+  features.forEach(feat=>{
+    const props=feat.properties||{};
+    const name=props.NAME||props.name||props.ADMIN||props.admin||props.sovereignt||
+                props.SOVEREIGNT||props.NAME_LONG||props.FORMAL_EN||props.geounit||
+                props.subunit||props.SUBUNIT||props.note||'';
+    let tid=NAME_TO_TID[name]||NAME_TO_TID[name.toLowerCase()]||guessName(name)||guessNameExtra(name,props);
+    if(!tid&&name&&name.length>1){
+      // Auto-create territory for unmapped region
+      const autoId='auto_'+(autoIdx++);
+      const hue=Math.floor(Math.random()*360);
+      const col=`hsl(${hue},55%,42%)`;
+      const troops=10+Math.floor(Math.random()*40);
+      T[autoId]={
+        n:name, f:'🌍', c:col,
+        tr:troops, g:30+Math.floor(Math.random()*40),
+        p:1, r:0, fac:0, frm:1, mor:65,
+        conn:[], // connections added dynamically
+        _auto:true
+      };
+      INIT[autoId]={tr:troops,g:T[autoId].g,p:1,r:0,fac:0,frm:1,mor:65};
+      NAME_TO_TID[name]=autoId;
+      NAME_TO_TID[name.toLowerCase()]=autoId;
+      tid=autoId;
+      unmapped.push(name+'→'+autoId);
+    } else if(!tid) {
+      unmapped.push(name||'(no name)');
+    }
+  });
+  
+  features.forEach(feat=>{
+    const props=feat.properties||{};
+    const name=props.NAME||props.name||props.ADMIN||props.admin||props.sovereignt||
+                props.SOVEREIGNT||props.NAME_LONG||props.FORMAL_EN||props.geounit||
+                props.subunit||props.SUBUNIT||props.note||'';
+    const tid=NAME_TO_TID[name]||NAME_TO_TID[name.toLowerCase()]||guessName(name)||guessNameExtra(name,props);
+    const t=tid?T[tid]:null;
+    const path=gMap.append('path').datum(feat)
+      .attr('class','land').attr('fill',t?t.c:'#3a4a3a')
+      .attr('data-tid',tid||'')
+      .attr('data-name',name)
+      .attr('d',pathGen);
+    if(tid){
+      try{
+        const cv=pathGen.centroid(feat);
+        if(cv&&!isNaN(cv[0])){
+          if(!centroids[tid])centroids[tid]={x:0,y:0,n:0};
+          centroids[tid].x+=cv[0];centroids[tid].y+=cv[1];centroids[tid].n++;
+        }
+      }catch(e){}
+    }
+    // Add territory name label to map for ALL territories (mapped or not)
+    if(name){
+      const cv2=pathGen.centroid(feat);
+      if(cv2&&!isNaN(cv2[0])&&!isNaN(cv2[1])){
+        const lbl=document.createElementNS('http://www.w3.org/2000/svg','text');
+        lbl.setAttribute('x',cv2[0]);lbl.setAttribute('y',cv2[1]);
+        lbl.setAttribute('text-anchor','middle');lbl.setAttribute('dominant-baseline','middle');
+        lbl.setAttribute('font-size','5');lbl.setAttribute('font-family','Arial,sans-serif');
+        lbl.setAttribute('font-weight','600');lbl.setAttribute('fill','rgba(255,255,255,0.85)');
+        lbl.setAttribute('stroke','rgba(0,0,0,0.6)');lbl.setAttribute('stroke-width','0.4');
+        lbl.setAttribute('paint-order','stroke');lbl.setAttribute('pointer-events','none');
+        lbl.setAttribute('class','base-label');
+        // Short name
+        const sn=name.replace('Empire','Imp.').replace('Republic','Cum.').replace('Kingdom','Krl.')
+                      .replace('British ','').replace('French ','').replace('German ','')
+                      .replace('Italian ','').replace('Dutch ','').replace('Portuguese ','')
+                      .split(' ').slice(0,2).join(' ');
+        lbl.textContent=sn;
+        gMap.node().appendChild(lbl);
+      }
+    }
+    path.on('click',function(ev){if(wasDrag)return;if(tid&&T[tid]&&PTID)handleClick(tid);})
+      .on('mousemove',function(ev){
+        if(tid&&T[tid])showTT(tid,ev);
+        else if(name){
+          const tt=document.getElementById('tt');
+          tt.innerHTML=`<b>${name}</b><br><span style="color:#888;font-size:9px;">Haritada eşleşmemiş bölge</span>`;
+          tt.style.display='block';
+          const r=document.getElementById('mapwrap').getBoundingClientRect();
+          tt.style.left=(ev.clientX-r.left+14)+'px';tt.style.top=(ev.clientY-r.top+14)+'px';
+        } else document.getElementById('tt').style.display='none';
+      })
+      .on('mouseleave',()=>document.getElementById('tt').style.display='none');
+  });
+
+  if(unmapped.length>0)console.log('Unmapped territories:',unmapped);
+  Object.entries(centroids).forEach(([tid,cv])=>centroids[tid]={x:cv.x/cv.n,y:cv.y/cv.n});
+
+  // Comprehensive overrides
+  const ov={
+    russia:projection([60,58]),uk:projection([-2,54]),france:projection([2,46]),
+    germany:projection([10,51]),austria:projection([16,47]),ottoman:projection([35,38]),
+    usa:projection([-100,38]),italy:projection([12,43]),japan:projection([138,37]),
+    china:projection([104,36]),brazil:projection([-52,-12]),argentina:projection([-64,-36]),
+    india_uk:projection([78,22]),canada_uk:projection([-96,58]),
+    australia_uk:projection([134,-26]),s_africa_uk:projection([25,-30]),
+    egypt_uk:projection([30,27]),russia:projection([70,58]),
+    ottoman:projection([35,38]),persia:projection([53,32]),
+    arabia:projection([44,24]),mesopotamia:projection([44,32]),
+    mongolia:projection([105,47]),china:projection([104,36]),
+    manchuria_j:projection([126,46]),korea_j:projection([127,36]),
+    siam:projection([100,14]),indochina_fr:projection([105,16]),
+    malaya_uk:projection([110,4]),netherlands_ei:projection([118,-4]),
+    german_ea:projection([36,-6]),german_sw:projection([18,-22]),
+    cameroon_g:projection([12,4]),west_africa_fr:projection([0,12]),
+    french_wa:projection([20,4]),nigeria_uk:projection([8,10]),
+    east_africa_uk:projection([36,-2]),sudan_uk:projection([30,15]),
+    ethiopia:projection([40,9]),libya_it:projection([17,27]),
+    algeria_fr:projection([3,28]),morocco_fr:projection([-6,32]),
+    angola_pt:projection([18,-12]),mozambique_pt:projection([35,-18]),
+    rhodesia_uk:projection([28,-18]),belgian_congo:projection([24,-4]),
+    madagascar_fr:projection([47,-20]),
+    finland_r:projection([26,62]),poland_r:projection([20,52]),
+    colombia:projection([-74,4]),peru:projection([-75,-10]),
+    chile:projection([-71,-35]),mexico:projection([-102,23]),
+    venezuela:projection([-66,8]),bolivia:projection([-65,-17]),
+    argentina:projection([-64,-34]),uruguay:projection([-56,-33]),
+    serbia:projection([21,44]),romania:projection([25,46]),
+    bulgaria:projection([25,43]),greece:projection([22,39]),
+    sweden:projection([17,62]),norway:projection([15,65]),
+    denmark:projection([10,56]),switzerland:projection([8,47]),
+    spain:projection([-3.7,40]),portugal:projection([-8,39]),
+    netherlands:projection([5,52]),belgium:projection([4.5,50.5]),
+    liberia:projection([-9,6]),djibouti_fr:projection([43,11.5]),
+    tibet:projection([88,32]),nepal_uk:projection([84,28]),
+    afghan:projection([65,33]),
+  };
+  Object.assign(centroids,ov);
+
+  // Build adjacency for auto-created territories based on centroid proximity
+  const allTids=Object.keys(T);
+  const autoTids=allTids.filter(id=>T[id]&&T[id]._auto&&centroids[id]);
+  autoTids.forEach(aId=>{
+    const ac=centroids[aId];
+    const nearest=allTids
+      .filter(id=>id!==aId&&centroids[id])
+      .map(id=>{const dc=centroids[id];return{id,d:Math.hypot(ac.x-dc.x,ac.y-dc.y)};})
+      .sort((a,b)=>a.d-b.d).slice(0,5);
+    nearest.forEach(({id})=>{
+      if(!T[aId].conn.includes(id))T[aId].conn.push(id);
+      if(T[id]&&!T[id].conn.includes(aId))T[id].conn.push(aId);
+    });
+  });
+
+  const zoom=d3.zoom().scaleExtent([0.3,14]).on('zoom',e=>{
+    gMap.attr('transform',e.transform);gMkr.attr('transform',e.transform);
+    curK=e.transform.k;
+    document.getElementById('zlbl').textContent='Zoom: '+Math.round(e.transform.k*100)+'%';
+    renderMarkers(gMkr);
+  });
+  d3.select('#mapsvg').call(zoom);
+  window._zoom=zoom;window._svg=d3.select('#mapsvg');
+  window._gMkr=gMkr;window._gMap=gMap;
+
+  d3.select('#mapsvg')
+    .on('mousedown.d',()=>{isDrag=false;wasDrag=false;})
+    .on('mousemove.d',e=>{if(e.buttons===1)isDrag=true;})
+    .on('mouseup.d',()=>{wasDrag=isDrag;setTimeout(()=>{wasDrag=false;isDrag=false;},80);});
+
+  window.doZoom=f=>window._svg.transition().duration(280).call(window._zoom.scaleBy,f);
+  window.resetZoom=()=>window._svg.transition().duration(400).call(window._zoom.transform,d3.zoomIdentity);
+  window.addEventListener('resize',()=>{
+    const r=document.getElementById('mapwrap').getBoundingClientRect();
+    window._svg.attr('width',r.width).attr('height',r.height);
+    projection.scale(r.width/6.3).translate([r.width/2,r.height/2]);
+    window._gMap.selectAll('path').attr('d',pathGen);
+    renderMarkers(window._gMkr);
+  });
+
+  renderMarkers(gMkr);
+  showPicker();
+}
+
+function showTT(tid,event){
+  const t=T[tid];
+  const tt=document.getElementById('tt');
+  const mw=document.getElementById('mapwrap');
+  tt.innerHTML=`<b>${t.f} ${t.n}</b><br>
+🪖 Asker: <b>${t.tr}</b> &nbsp; 💰 Altın: <b>${t.g}</b> &nbsp; 😤 Moral: <b>${t.mor}</b><br>
+🏭 Üretim: <b>${t.p}/tur</b> &nbsp; 🔬 Araştırma: <b>${t.r}/tur</b><br>
+🏗️ Fabrika: <b>${t.fac}</b> (+${t.fac*3} asker/tur) &nbsp;🌾 Çiftlik: <b>${t.frm}</b>`;
+  tt.style.display='block';
+  const r=mw.getBoundingClientRect();
+  let tx=event.clientX-r.left+14,ty=event.clientY-r.top+14;
+  if(tx+265>r.width)tx-=280;if(ty+100>r.height)ty-=110;
+  tt.style.left=tx+'px';tt.style.top=ty+'px';
+}
+
+// ─── MARKERS ─────────────────────────────────
+function renderMarkers(gMkr){
+  if(!gMkr)gMkr=window._gMkr;if(!gMkr)return;
+  gMkr.selectAll('*').remove();
+  const sc=Math.max(0.3,Math.min(1.1,1/Math.sqrt(curK)));
+  const ns='http://www.w3.org/2000/svg';
+
+  Object.entries(T).forEach(([tid,t])=>{
+    const cv=centroids[tid];if(!cv||isNaN(cv.x)||isNaN(cv.y))return;
+    const isOwned=playerOwned.has(tid);
+    const isSel=tid===sel;
+    const g=gMkr.append('g').attr('transform',`translate(${cv.x},${cv.y}) scale(${sc})`);
+
+    // ── ÜLKE ADI (herkeste göster) ──────────────────────────
+    // Short name: use first meaningful word (skip "İmparatorluğu" etc)
+    const skipWords=['İmparatorluğu','Cumhuriyeti','Krallığı','Emirliği','Sultanlığı',
+                     'Konfederasyonu','Birliği','Dominyon','Empire','Republic','Kingdom',
+                     'Colony','British','French','German','Italian','Dutch','Portuguese',
+                     'Imperial','of','the','and'];
+    const words=t.n.split(' ').filter(w=>w.length>1&&!skipWords.includes(w));
+    const shortName=words.slice(0,2).join(' ')||t.n.split(' ')[0];
+    
+    const nameEl=document.createElementNS(ns,'text');
+    nameEl.setAttribute('x','0');nameEl.setAttribute('y',isOwned?'-8':'-2');
+    nameEl.setAttribute('text-anchor','middle');
+    nameEl.setAttribute('font-size','8');  // bigger
+    nameEl.setAttribute('font-family','Arial,sans-serif');
+    nameEl.setAttribute('font-weight','bold');
+    nameEl.setAttribute('fill','#ffffff');
+    nameEl.setAttribute('stroke','rgba(0,0,0,0.8)');
+    nameEl.setAttribute('stroke-width','0.6');
+    nameEl.setAttribute('paint-order','stroke');
+    nameEl.textContent=shortName;
+    g.node().appendChild(nameEl);
+
+    // ── ASKER SAYISI (sadece kendi topraklarında) ────────────
+    if(isOwned){
+      const star=tid===PTID?'★ ':'';
+      const txt=star+t.tr;
+      const w=Math.max(20,txt.length*5.5+6);
+      const stroke=isSel?'#ffd700':tid===PTID?'#ffffff':'rgba(255,255,255,0.6)';
+      const sw=isSel||tid===PTID?1.4:0.5;
+      const bg=tid===PTID?'#1a0a00':'#0a1a0a';
+      const rect=document.createElementNS(ns,'rect');
+      rect.setAttribute('x',-w/2);rect.setAttribute('y','1');
+      rect.setAttribute('width',w);rect.setAttribute('height',12);
+      rect.setAttribute('rx','2');rect.setAttribute('fill',bg);
+      rect.setAttribute('stroke',stroke);rect.setAttribute('stroke-width',sw);
+      rect.setAttribute('opacity','0.88');
+      const tEl=document.createElementNS(ns,'text');
+      tEl.setAttribute('x','0');tEl.setAttribute('y','10');
+      tEl.setAttribute('text-anchor','middle');tEl.setAttribute('font-size','6.5');
+      tEl.setAttribute('font-family','Arial,sans-serif');tEl.setAttribute('font-weight','bold');
+      tEl.setAttribute('fill','#fff');tEl.textContent=txt;
+      g.node().appendChild(rect);g.node().appendChild(tEl);
+    }
+  });
+}
+
+// ─── COLORS ──────────────────────────────────
+function renderColors(){
+  if(!window._gMap)return;
+  window._gMap.selectAll('.land').each(function(){
+    const el=d3.select(this);
+    const tid=el.attr('data-tid');
+    if(!tid||!T[tid]){el.attr('fill','#2a3a2a').attr('class','land');return;}
+    const t=T[tid];
+    el.attr('fill',t.c);
+    let cls='land';
+    if(!PTID)return;
+    if(playerOwned.has(tid)){
+      cls+=' MINE';
+      if(tid===sel)cls+=' SEL';
+    } else if(sel&&playerOwned.has(sel)&&connFrom(sel,tid)){
+      cls+=' ATK';
+    } else if(sel&&playerOwned.has(sel)&&playerOwned.has(tid)&&connFrom(sel,tid)){
+      cls+=' MOV';
+    }
+    el.attr('class',cls);
+  });
+}
+
+// ─── PICKER ──────────────────────────────────
+function buildPicker(){
+  const g=document.getElementById('cGrid');g.innerHTML='';
+  // Sort by troop strength (major powers first)
+  Object.entries(T).sort((a,b)=>b[1].tr-a[1].tr).forEach(([tid,t])=>{
+    const d=document.createElement('div');
+    d.className='pc';d.style.borderColor=t.c;
+    d.innerHTML=`<div class="pf">${t.f}</div><div class="pn">${t.n}</div>
+<div class="ps">🪖${t.tr} asker &nbsp; 💰${t.g} &nbsp; 🏭${t.p}/tur<br>🔬${t.r}/tur &nbsp; 😤Moral:${t.mor} &nbsp; 🏗️${t.fac}fab</div>`;
+    d.setAttribute('data-n',t.n.toLowerCase());
+    d.onclick=()=>startGame(tid);
+    g.appendChild(d);
+  });
+}
+function filterCards(){
+  const q=document.getElementById('srch').value.toLowerCase();
+  document.querySelectorAll('.pc').forEach(c=>{c.style.display=c.getAttribute('data-n').includes(q)?'':'none';});
+}
+function showPicker(){document.getElementById('picker').style.display='flex';buildPicker();}
+
+function startGame(tid){
+  PTID=tid;const t=T[tid];
+  document.getElementById('picker').style.display='none';
+  document.getElementById('pflag').textContent=t.f;
+  document.getElementById('plbl').textContent=t.n+' · 1914 Büyük Savaş';
+  sel=null;selFrom=null;turn=1;phase='player';dead=false;techs=new Set();pendingAction=null;
+  playerOwned.clear();playerOwned.add(tid);
+  logs=[`⚔️ ${t.f} ${t.n} ile 1914'te Büyük Savaş başlıyor!`];
+  Object.entries(INIT).forEach(([id,s])=>{
+    if(T[id])Object.assign(T[id],{tr:s.tr,g:s.g,p:s.p,r:s.r,fac:s.fac,frm:s.frm,mor:s.mor});
+  });
+  // Reset colors for auto-territories
+  Object.entries(T).forEach(([id,t])=>{
+    if(t._auto&&INIT[id])t.c=t.c; // keep original color
+  });
+  document.getElementById('go').classList.remove('show');
+  renderColors();renderMarkers();renderAll();
+}
+
+// ─── CLICK ───────────────────────────────────
+function handleClick(tid){
+  if(phase!=='player'||dead||!PTID)return;
+  const t=T[tid];
+
+  if(!sel){
+    // Select any owned territory as attack source
+    if(playerOwned.has(tid)){
+      sel=tid;
+      renderColors();renderMarkers();renderSidebar();
+    }
+    return;
+  }
+
+  if(sel===tid){sel=null;renderColors();renderMarkers();renderSidebar();return;}
+
+  // Check if target is adjacent to selected owned territory
+  if(!connFrom(sel,tid)){
+    addLog(`❌ ${T[sel].n}→${t.n}: Ortak sınır yok!`);
+    sel=null;renderColors();renderMarkers();renderSidebar();return;
+  }
+
+  // Transfer troops between own territories
+  if(playerOwned.has(tid)){
+    // Same territory? Deselect
+    if(sel===tid){sel=null;renderColors();renderMarkers();renderSidebar();return;}
+    // Transfer troops
+    pendingAction={from:sel, to:tid, type:'transfer'};
+    showTransferPicker(sel,tid);
+    sel=null;renderColors();renderMarkers();
+    return;
+  }
+
+  // Attack enemy territory
+  const attacker=sel;
+  pendingAction={from:attacker, to:tid, type:'attack'};
+  showActionPicker(attacker,tid);
+  sel=null;renderColors();renderMarkers();
+}
+
+// conn from any territory (uses original connections)
+function connFrom(fromId,toId){
+  const ta=T[fromId],tb=T[toId];
+  return (ta&&ta.conn.includes(toId))||(tb&&tb.conn.includes(fromId));
+}
+
+function showTransferPicker(fromTid,toTid){
+  const src=T[fromTid],tgt=T[toTid];
+  const max=Math.max(1,src.tr-1);
+  document.getElementById('mp-title').textContent='🚶 ASKER TRANSFER';
+  const okBtn=document.getElementById('mp-ok');
+  okBtn.textContent='✓ GÖNDER';
+  okBtn.style.borderColor='#008844';okBtn.style.color='#88ffaa';
+  document.getElementById('mp-info').innerHTML=
+    `<b style="color:#ffd700">${src.n}</b> → <b style="color:#88ffaa">${tgt.n}</b><br>
+🪖 Hedef askeri: <b>${tgt.tr}</b><br>
+Kaç asker transfer edeceksin? <span style="color:#6a4a10">(max ${max})</span>`;
+  const slider=document.getElementById('mp-slider');
+  slider.max=max;slider.value=Math.min(Math.ceil(max*0.5),max);
+  document.getElementById('mp-val').textContent=slider.value+' asker';
+  document.getElementById('mp-note').innerHTML='ℹ️ Askerler seçilen bölgeye taşınır.';
+  slider.oninput=()=>{document.getElementById('mp-val').textContent=slider.value+' asker';document.getElementById('mp-note').innerHTML='ℹ️ '+slider.value+' asker taşınacak.';};
+  document.getElementById('movepicker').style.display='flex';
+}
+
+function showActionPicker(fromTid,toTid){
+  const src=T[fromTid],tgt=T[toTid];
+  const max=Math.max(1,src.tr-1);
+  document.getElementById('mp-title').textContent='⚔️ SAVAŞ İLANI';
+  const okBtn=document.getElementById('mp-ok');
+  okBtn.textContent='⚔️ SALDIRI BAŞLAT';
+  okBtn.style.borderColor='#cc4400';okBtn.style.color='#ffaa44';
+  document.getElementById('mp-info').innerHTML=
+    `<b style="color:#ffd700">${src.n}</b> → <b style="color:#ff6600">${tgt.n}</b><br>
+🪖 Düşman askeri: <b>${tgt.tr}</b> &nbsp; 😤 Moral: <b>${tgt.mor}</b><br>
+Kaç asker göndereceksin? <span style="color:#6a4a10">(min 1, max ${max})</span>`;
+  const slider=document.getElementById('mp-slider');
+  slider.max=max;slider.value=Math.min(Math.ceil(max*0.6),max);
+  updateSlider();slider.oninput=updateSlider;
+  document.getElementById('movepicker').style.display='flex';
+}
+
+function updateSlider(){
+  const slider=document.getElementById('mp-slider');
+  const amt=parseInt(slider.value);
+  const src=T[pendingAction?.from];
+  const tgt=T[pendingAction?.to];
+  if(!src||!tgt)return;
+  const atkBonus=getATKBonus();
+  const apE=Math.floor(amt*0.70*atkBonus*(src.mor/100));
+  const dpE=Math.floor(tgt.tr*0.55*(tgt.mor/100));
+  const win=Math.round(Math.min(95,Math.max(5,(apE/(apE+dpE))*100)));
+  document.getElementById('mp-val').textContent=amt+' asker';
+  document.getElementById('mp-note').innerHTML=
+    `🗡️ Tahmini saldırı: <b style="color:#88ff88">${apE}</b> &nbsp; 🛡️ Savunma: <b style="color:#ff8888">${dpE}</b> &nbsp; 🎲 Şans: <b style="color:${win>60?'#88ff88':win>40?'#ffff88':'#ff8888'}">${win}%</b>`;
+}
+
+function confirmAction(){
+  if(!pendingAction)return;
+  const amt=parseInt(document.getElementById('mp-slider').value);
+  if(pendingAction.type==='transfer'){
+    // Move troops between own territories
+    const src=T[pendingAction.from], tgt=T[pendingAction.to];
+    const actual=Math.min(amt, src.tr-1);
+    if(actual>0){src.tr-=actual;tgt.tr+=actual;addLog(`🚶 ${src.n}→${tgt.n}: ${actual} asker taşındı.`);}
+  } else {
+    doAttack(pendingAction.from, pendingAction.to, amt);
+  }
+  pendingAction=null;
+  document.getElementById('movepicker').style.display='none';
+  checkWin();renderColors();renderMarkers();renderAll();
+}
+
+function cancelAction(){
+  pendingAction=null;
+  document.getElementById('movepicker').style.display='none';
+  sel=null;renderColors();renderMarkers();renderSidebar();
+}
+
+// ─── COMBAT ──────────────────────────────────
+function getATKBonus(){
+  let b=1.0;
+  if(techs.has('army2'))b+=0.10; // WWI: trench warfare helps defense, small attack bonus
+  if(techs.has('army3'))b+=0.35;
+  if(techs.has('air3'))b+=0.20;
+  return b;
+}
+function getDefBonus(){
+  let b=1.0;
+  if(techs.has('army2'))b+=0.25; // Trenches help defense more
+  return b;
+}
+
+function doAttack(sId,tId,troopsSent){
+  const s=T[sId],t=T[tId];
+  // ── YENİ SAVAŞ MATEMATİĞİ ──
+  // Moral ve teknoloji etkili hafif rastgele faktör
+  const atkMod=(0.92+Math.random()*0.16)*getATKBonus()*(s.mor/100);
+  const defMod=(0.92+Math.random()*0.16)*getDefBonus()*(t.mor/100);
+  const actualSent=Math.min(troopsSent, s.tr-1);
+  const effAtk=Math.floor(actualSent*atkMod); // saldırgan etkili güç
+  const effDef=Math.floor(t.tr*defMod);       // savunmacı etkili güç
+
+  // Karşılıklı kayıplar: her iki taraftan eşit kayıp
+  // Eğer saldırgan güçlüyse fark kadar artı askeri kalır
+  const minForce=Math.min(effAtk,effDef);
+  const atkLoss=Math.min(actualSent, Math.floor(minForce/atkMod*(techs.has('med2')?0.88:1)));
+  const defLoss=Math.min(t.tr,       Math.floor(minForce/defMod));
+
+  s.tr=Math.max(1,s.tr-actualSent); // askerler ana üsten ayrılır
+
+  const wins=effAtk>effDef;
+  const oldOwner=t.n;
+
+  if(wins){
+    const survivors=Math.max(1,actualSent-atkLoss);
+    t.tr=survivors; // hayatta kalanlar toprağı işgal eder
+    t.mor=Math.max(30,t.mor-22);s.mor=Math.min(100,s.mor+4);
+    T[tId].c=T[PTID].c;
+    if(playerOwned.has(sId))playerOwned.add(tId);
+    addLog(`⚔️ ${s.n}→${oldOwner} FETHEDİLDİ! Sen:${atkLoss} kayıp · Düşman:${defLoss} kayıp · ${survivors} asker yerleşti`);
+  } else {
+    const defSurvivors=Math.max(1,t.tr-defLoss);
+    t.tr=defSurvivors;
+    s.mor=Math.max(35,s.mor-7);
+    addLog(`💥 ${s.n}→${t.n} püskürtüldü! Sen:${atkLoss} kayıp · Düşman:${defLoss} kayıp · ${defSurvivors} savunmacı kaldı`);
+  }
+}
+
+// ─── TURNS ───────────────────────────────────
+function endTurn(){
+  if(phase!=='player'||dead||!PTID)return;
+  const p=pt();
+  const prodBonus=techs.has('ind3')?4:techs.has('ind2')?2:0;
+  const gInc=Math.floor(p.g*0.08)+p.frm*2+(techs.has('navy2')?6:0);
+  const rInc=Math.floor(p.r*0.1);
+  p.g+=gInc; p.r+=rInc;
+  p.tr+=p.fac*3+Math.floor((p.p+prodBonus)*0.3);
+  p.mor=Math.min(100,p.mor+2+(p.frm>0?1:0));
+  addLog(`💰 Tur ${turn}: +${gInc}💰 +${rInc}🔬 +${p.fac*3+Math.floor((p.p+prodBonus)*0.3)}🪖 (üretim)`);
+  phase='ai';renderStats();
+  setTimeout(aiTurn,800);
+}
+
+function aiTurn(){
+  // Each AI country acts independently — strongest neighbor attacks weakest
+  const aiCountries=Object.entries(T).filter(([id])=>id!==PTID&&T[id].tr>12);
+  // Pick 1-3 random countries to act this turn
+  const actors=aiCountries.sort(()=>Math.random()-0.5).slice(0,Math.min(3,aiCountries.length));
+  let acted=0;
+  for(const [sId,s] of actors){
+    // Find weakest neighbor that isn't same "owner"
+    const targets=s.conn
+      .filter(id=>T[id]&&id!==sId&&T[id].tr<s.tr*0.75)
+      .sort((a,b)=>T[a].tr-T[b].tr);
+    if(targets.length&&Math.random()>0.45){
+      const tId=targets[0];const tgt=T[tId];
+      const send=Math.floor(s.tr*0.5);
+      if(send<1)continue;
+      const ap=Math.floor(send*0.70*(0.85+Math.random()*0.30)*(s.mor/100));
+      const dp=Math.floor(tgt.tr*0.55*(0.85+Math.random()*0.30)*(tgt.mor/100));
+      const wins=ap>dp;
+      s.tr=Math.max(1,s.tr-send);
+      if(wins){
+        tgt.tr=Math.max(1,Math.floor(send*0.45));tgt.mor=Math.max(30,tgt.mor-15);
+        tgt.c=s.c; // conquering country takes territory color
+        addLog(`🤖 ${s.n} → ${tgt.n} FETHETTİ!`);
+      } else {
+        tgt.tr=Math.max(1,tgt.tr-Math.floor(ap*0.35));
+        addLog(`🤖 ${s.n} → ${tgt.n} saldırısı püskürtüldü.`);
+      }
+      acted++;
+    }
+    // Reinforce
+    s.tr+=s.fac*2+Math.floor(s.p*0.2);
+    s.mor=Math.min(100,s.mor+1);
+  }
+  if(!acted)addLog('🌍 Dünya: Sessizlik... Fırtına öncesi.');
+
+  // Reinforce player too
+  const p=pt();
+  p.tr+=Math.floor(p.fac*1+p.p*0.1);
+
+  turn++;phase='player';checkWin();
+  renderColors();renderMarkers();renderAll();
+}
+
+function checkWin(){
+  // Win: conquered half the world (subjective)
+  const total=Object.keys(T).length;
+  if(playerOwned.size>=Math.ceil(total*0.5)){showGO('win');return;}
+  if(T[PTID].tr<=0){showGO('lose');}
+}
+
+function showGO(r){
+  dead=true;phase='over';
+  document.getElementById('gem').textContent=r==='win'?'🏆':'💀';
+  const ti=document.getElementById('gti');
+  ti.textContent=r==='win'?'ZAFER!':'YENİLGİ!';
+  ti.style.color=r==='win'?'#ffd700':'#ff4444';
+  ti.style.textShadow='0 0 25px '+(r==='win'?'#ffd700':'#ff0000');
+  document.getElementById('gsu').textContent=r==='win'
+    ?'Büyük zafere ulaştınız! İmparatorluğunuz tarihe geçti.'
+    :'Başkentiniz düştü. Büyük Savaş kaybedildi.';
+  document.getElementById('go').classList.add('show');
+}
+
+// ─── ACTIONS ─────────────────────────────────
+function buyTroops(){
+  const p=pt();const cost=techs.has('ind3')?17:20;
+  if(p.g<cost){addLog(`⚠️ ${cost}💰 gerekli!`);return;}
+  p.tr+=15;p.g-=cost;
+  addLog(`🪖 ${p.n}'a 15 asker eklendi (-${cost}💰)`);
+  renderMarkers();renderSidebar();renderStats();
+}
+function buildFactory(){
+  const p=pt();
+  if(p.g<40){addLog('⚠️ 40💰 gerekli!');return;}
+  p.fac=Math.min(10,p.fac+1);p.p=Math.min(20,p.p+3);p.g-=40;
+  addLog(`🏭 ${p.n}'da fabrika kuruldu! +3 asker/tur & +3 üretim KALICI`);
+  renderSidebar();renderStats();
+}
+function buildFarm(){
+  const p=pt();
+  if(p.g<25){addLog('⚠️ 25💰 gerekli!');return;}
+  p.frm=Math.min(10,p.frm+1);p.g+=5;p.g-=25;
+  addLog(`🌾 ${p.n}'da çiftlik kuruldu! +5💰/tur kalıcı & moral onarımı`);
+  renderSidebar();renderStats();
+}
+
+// ─── TECH ────────────────────────────────────
+function openTech(){
+  if(!PTID)return;const p=pt();
+  const tc=document.getElementById('tcc');
+  tc.innerHTML=`<div style="font-size:10px;color:#8a6820;margin-bottom:10px;">Araştırma Puanı: <b style="color:#cc88ff">${p.r}</b></div>`;
+  TECH_TREE.forEach(tech=>{
+    const done=techs.has(tech.id);
+    const reqMet=!tech.req||techs.has(tech.req);
+    const canAfford=p.r>=tech.cost;
+    const reqName=tech.req?TECH_TREE.find(x=>x.id===tech.req)?.n:'';
+    const d=document.createElement('div');d.className='ti';
+    d.innerHTML=`<div><div class="ti-n">${done?'✅':reqMet?'🔬':'🔒'} ${tech.n} <span style="color:#5a3808;font-size:9px">(${tech.cost}pts)</span></div>
+<div class="ti-d">${tech.desc}</div><div class="ti-e">↪ ${tech.eff}</div>
+${!reqMet?`<div style="font-size:9px;color:#aa5500">🔒 Önce: ${reqName}</div>`:''}
+</div><button class="tbtn" ${done||!reqMet||!canAfford?'disabled':''} onclick="resTech('${tech.id}',${tech.cost})">
+${done?'TAMAM':!reqMet?'KİLİTLİ':!canAfford?'YETERSIZ':'ARAŞTIR'}</button>`;
+    tc.appendChild(d);
+  });
+  document.getElementById('techmod').classList.add('show');
+}
+function resTech(id,cost){
+  const p=pt();if(p.r<cost){addLog('⚠️ Yeterli puan yok!');return;}
+  p.r-=cost;techs.add(id);
+  addLog(`🔬 "${TECH_TREE.find(t=>t.id===id)?.n}" araştırıldı!`);
+  openTech();renderStats();renderLog();
+}
+
+// ─── RENDER ──────────────────────────────────
+function renderStats(){
+  if(!PTID)return;const p=pt();
+  document.getElementById('s-tur').textContent=turn;
+  document.getElementById('s-gld').textContent=p.g;
+  document.getElementById('s-prd').textContent=p.p+(techs.has('ind3')?'+4':techs.has('ind2')?'+2':'');
+  document.getElementById('s-res').textContent=p.r;
+  const ph=document.getElementById('s-ph');
+  ph.textContent=phase==='player'?'🟢 SENİN TURUN':'🔴 AI OYNUYOR';
+  ph.className='st st-ph'+(phase==='player'?' on':'');
+  document.getElementById('endbtn').disabled=phase!=='player'||dead;
+  document.getElementById('endbtn').textContent=phase==='player'?'⏭ TURU BİTİR':'⏳ BEKLİYOR...';
+
+  // Stat box
+  const total=Object.keys(T).length;
+  document.getElementById('statbox').innerHTML=
+    `🌍 Toplam devlet: <b>${total}</b><br>
+🏴 Kontrol ettiğin: <b style="color:#ffd700">${playerOwned.size}</b>/<b>${total}</b><br>
+🎯 Hedef: ${Math.ceil(total*0.5)} devlet (Zafer)`;
+}
+
+function renderSidebar(){
+  const scEl=document.getElementById('sc'),apEl=document.getElementById('ap');
+  const cpEl=document.getElementById('cp');cpEl.style.display='none';
+  if(!sel||!PTID){scEl.innerHTML='<span style="color:#2a2008;font-style:italic;">Devletini seç (beyaz kenarlık)...</span>';apEl.innerHTML='';return;}
+  const t=T[sel],p=T[PTID];
+  scEl.innerHTML=`<div style="font-size:12px;font-weight:bold;color:#ffd700;margin-bottom:2px;">${t.f} ${t.n}</div>
+<div style="color:#c8a860;font-size:9px;line-height:1.9;">
+🪖 ${t.tr} asker &nbsp; 💰 ${t.g} altın &nbsp; 😤 Moral: ${t.mor}<br>
+🏭 Üretim: ${t.p}/tur &nbsp; 🔬 Araştırma: ${t.r}/tur<br>
+🏗️ Fabrika: ${t.fac} (→+${t.fac*3} asker/tur)<br>
+🌾 Çiftlik: ${t.frm} (→+${t.frm*2}💰/tur)</div>`;
+  if(playerOwned.has(sel)){
+    const cost=techs.has('ind3')?17:20;
+    apEl.innerHTML=`<div style="font-size:8px;color:#8a6820;margin-top:5px;margin-bottom:3px;">EYLEMLER</div>
+<button class="abtn" onclick="buyTroops()" ${p.g<cost?'disabled':''}><b>🪖 +15 Asker (${cost}💰)</b><span>Anında takviye</span></button>
+<button class="abtn" onclick="buildFactory()" ${p.g<40?'disabled':''}><b>🏭 Fabrika Kur (40💰)</b><span>+3 asker/tur kalıcı & +3 üretim</span></button>
+<button class="abtn" onclick="buildFarm()" ${p.g<25?'disabled':''}><b>🌾 Çiftlik Kur (25💰)</b><span>+5💰/tur kalıcı & moral onarımı</span></button>`;
+  } else apEl.innerHTML='';
+}
+
+function renderLog(){
+  document.getElementById('logbox').innerHTML=logs.map((l,i)=>`<div class="le ${i===0?'n':'o'}">${l}</div>`).join('');
+}
+function renderAll(){renderStats();renderSidebar();renderLog();}
+</script>
+</body>
+</html>
